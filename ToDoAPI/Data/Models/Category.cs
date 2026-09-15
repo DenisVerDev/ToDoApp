@@ -8,10 +8,10 @@
 
         public string Color { get; set; } = null!; // text representation of chosen color in HEX format
 
-        public int AuthorId { get; set; } // foreign key for author Id
+        public string AuthorId { get; set; } = null!; // foreign key for author Id | it is string to fit with IdentityUser
 
-        public User Author { get; set; } = null!; // Navigation property for Author
+        public virtual User Author { get; set; } = null!; // Navigation property for Author
 
-        public ICollection<Task> Tasks { get; set; } = new List<Task>(); // Navigation property for Tasks which belong to this category
+        public virtual ICollection<Task> Tasks { get; set; } = new List<Task>(); // Navigation property for Tasks which belong to this category
     }
 }
