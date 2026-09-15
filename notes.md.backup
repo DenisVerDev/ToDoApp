@@ -15,7 +15,7 @@
 2. ICategoriesRepository - 
 3. Technically, Users have Identity to work with so for now I let it be. Though it can be argued that Identity logic should be hidden too.
 
-There is a problem with more complicated sql queries like grouping, sorting, skipping and other stuff. How about these methods would return 
+Problem: There is a problem with more complicated sql queries like grouping, sorting, skipping and other stuff. How about these methods would return simple IQueryable? And then we can build from it?
 
 ## Database
 If I am gonna use Identity, then it is obvious that certain tables are gonna be created first. That means that I cannot plan from scratch.
@@ -42,11 +42,9 @@ I am gonna use Code First approach.
 ### What I want to achieve
 |Task|Status|
 |-|-|
-|1. Design the database with ASP.NET Core Identity in mind.|Pending...|
-|2. Create the database.|Pending...|
-|3. Design only neccessary DAL.|Pending...|
-|4. Decide the approach in building DAL.|Pending...|
-|5. Fully create DAL.|Pending...|
+|1. Design the database with ASP.NET Core Identity in mind.|DONE|
+|2. Create the database.|DONE|
+|3. Design only neccessary DAL.|IN PROGRESS|
+|4. Decide the approach in building DAL.|DONE|
+|5. Fully create DAL.|IN PROGRESS|
 |6. Create xUnit tests for DAL.|Pending...|
-
-### What I've actually done

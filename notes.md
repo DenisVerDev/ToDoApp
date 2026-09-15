@@ -42,11 +42,9 @@ I am gonna use Code First approach.
 ### What I want to achieve
 |Task|Status|
 |-|-|
-|1. Design the database with ASP.NET Core Identity in mind.|Pending...|
-|2. Create the database.|Pending...|
-|3. Design only neccessary DAL.|Pending...|
-|4. Decide the approach in building DAL.|Pending...|
-|5. Fully create DAL.|Pending...|
+|1. Design the database with ASP.NET Core Identity in mind.|DONE|
+|2. Create the database.|DONE|
+|3. Design only neccessary DAL.|IN PROGRESS|
+|4. Decide the approach in building DAL.|DONE|
+|5. Fully create DAL.|IN PROGRESS|
 |6. Create xUnit tests for DAL.|Pending...|
-
-### What I've actually done
