@@ -12,6 +12,6 @@
 
         public User Author { get; set; } = null!; // Navigation property for Author
 
-        public IEnumerable<Category> Categories { get; set; } = new List<Category>(); // Navigation property for attached Categories
+        public ICollection<Category> Categories { get; set; } = new List<Category>(); // Navigation property for attached Categories
     }
 }

@@ -12,6 +12,6 @@
 
         public User Author { get; set; } = null!; // Navigation property for Author
 
-        public IEnumerable<Task> Tasks { get; set; } = new List<Task>(); // Navigation property for Tasks which belong to this category
+        public ICollection<Task> Tasks { get; set; } = new List<Task>(); // Navigation property for Tasks which belong to this category
     }
 }
