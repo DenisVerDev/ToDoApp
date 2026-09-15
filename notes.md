@@ -10,6 +10,13 @@
 2. Business Logic Layer (interfaces and their realizations working with business logic while conceiling database operations)
 3. Controllers Layer
 
+### Data Access Layer
+1. ITasksRepository - AddTaskAsync (returns Task entity, cause Id will have a value), DeleteTaskAsync (returns nothing), FetchTaskAsync (by Id only, because there are no other unique values that can be used for identification, maybe using predicate), FetchTasksAsync (predicate search), AnyTaskAsync (predicate). You know what, how about making these methods as generic as possible, so that they could be used for any situation and I didn't have a need to add new functionality, BLL will be fine.
+2. ICategoriesRepository - 
+3. Technically, Users have Identity to work with so for now I let it be. Though it can be argued that Identity logic should be hidden too.
+
+Problem: There is a problem with more complicated sql queries like grouping, sorting, skipping and other stuff. How about these methods would return simple IQueryable? And then we can build from it?
+
 ## Database
 If I am gonna use Identity, then it is obvious that certain tables are gonna be created first. That means that I cannot plan from scratch.
 
