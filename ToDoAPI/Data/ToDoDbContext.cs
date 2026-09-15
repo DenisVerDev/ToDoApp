@@ -62,6 +62,8 @@ namespace ToDoAPI.Data
                     t.HasCheckConstraint("CK_Categories_Color", "LEN(TRIM([Color])) >= 6"); // I don't know yet if '#' is gonna be there (#RRGGBB)
                 });
 
+                entity.HasIndex(x => new { x.Name, x.AuthorId }).IsUnique();
+
                 entity.HasOne(x => x.Author)
                   .WithMany(x => x.Categories)
                   .HasForeignKey(x => x.AuthorId)
