@@ -13,6 +13,19 @@
 ## Database
 If I am gonna use Identity, then it is obvious that certain tables are gonna be created first. That means that I cannot plan from scratch.
 
+In order to design the database we need to understand what we need from the assignment and what ASP.NET Core Identity provides.
+
+Assignment wants:
+1. Task entity - title, description, author, author's categories. Thats the minimum I can enfure from tech assignment. There must be an author, categories and some content to edit and view.
+2. Category entity - name, color, author, tasks. Again, the minimum. There obviously must be an author, category can be asigned to tasks. Name is self-explanatory while color just serves visual distinction function.
+3. User entity - email, password_hash, tasks, categories. Again the minimum. Password hash is my own interpretation.
+
+ASP.NET Core Identity provides:
+1. User Entity - name, email, claims, logins, tokens, roles, password hash and many more stuff. ASP.NET Core Identity takes all the burden with managing membership/session logic.
+2. Bunch of other stuff that is not as important, because I am here for User Entity.
+
+We can create our own User Entity derived from IdentityUser.
+
 # Development diary
 
 ## 15.09.2026
@@ -26,3 +39,5 @@ If I am gonna use Identity, then it is obvious that certain tables are gonna be 
 |4. Decide the approach in building DAL.|Pending...|
 |5. Fully create DAL.|Pending...|
 |6. Create xUnit tests for DAL.|Pending...|
+
+### What I've actually done
