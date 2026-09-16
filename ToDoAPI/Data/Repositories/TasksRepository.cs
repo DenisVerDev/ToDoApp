@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using ToDoAPI.Data.Repositories.FetchBuilder;
 
 namespace ToDoAPI.Data.Repositories
 {
@@ -18,12 +19,21 @@ namespace ToDoAPI.Data.Repositories
         }
 
         public async Task<Models.Task?> FetchTaskAsync(Expression<Func<Models.Task, bool>> predicate)
-            => await _dbContext.Tasks.Where(predicate).FirstOrDefaultAsync();
+            => await GetPredicateQuery(predicate).FirstOrDefaultAsync();
+
+        public async Task<Models.Task?> FetchTaskAsync(Expression<Func<Models.Task, bool>> predicate, IFetchBuilder<Models.Task> fetchBuilder)
+             => await fetchBuilder.Build(GetPredicateQuery(predicate)).FirstOrDefaultAsync();
 
         public async Task<List<Models.Task>> FetchTasksAsync(Expression<Func<Models.Task, bool>> predicate)
-             => await _dbContext.Tasks.Where(predicate).ToListAsync();
+             => await GetPredicateQuery(predicate).ToListAsync();
+
+        public async Task<List<Models.Task>> FetchTasksAsync(Expression<Func<Models.Task, bool>> predicate, IFetchBuilder<Models.Task> fetchBuilder)
+            => await fetchBuilder.Build(GetPredicateQuery(predicate)).ToListAsync();
 
         public async Task<bool> AnyTaskAsync(Expression<Func<Models.Task, bool>> predicate)
             => await _dbContext.Tasks.AnyAsync(predicate);
+    
+        private IQueryable<Models.Task> GetPredicateQuery(Expression<Func<Models.Task, bool>> predicate)
+            => _dbContext.Tasks.Where(predicate).AsQueryable();
     }
 }

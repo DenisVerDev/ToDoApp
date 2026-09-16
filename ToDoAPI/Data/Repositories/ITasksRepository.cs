@@ -1,8 +1,10 @@
-﻿using System.Linq.Expressions;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+using ToDoAPI.Data.Repositories.FetchBuilder;
 
 namespace ToDoAPI.Data.Repositories
 {
-    public interface ITasksRepository // all complex stuff like sotring, grouping, pagination is left out for now.
+    public interface ITasksRepository
     {
         Task AddTaskAsync(Models.Task task);
 
@@ -10,7 +12,11 @@ namespace ToDoAPI.Data.Repositories
 
         Task<Models.Task?> FetchTaskAsync(Expression<Func<Models.Task, bool>> predicate);
 
+        Task<Models.Task?> FetchTaskAsync(Expression<Func<Models.Task, bool>> predicate, IFetchBuilder<Models.Task> fetchBuilder);
+
         Task<List<Models.Task>> FetchTasksAsync(Expression<Func<Models.Task, bool>> predicate);
+
+        Task<List<Models.Task>> FetchTasksAsync(Expression<Func<Models.Task, bool>> predicate, IFetchBuilder<Models.Task> fetchBuilder);
 
         Task<bool> AnyTaskAsync(Expression<Func<Models.Task, bool>> predicate);
     }
