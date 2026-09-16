@@ -9,6 +9,8 @@ namespace ToDoAPI.Data.Repositories
     {
         Task AddCategoryAsync(Category category);
 
+        Task UpdateCategoryAsync(Category category);
+
         Task DeleteCategoryAsync(Category category);
 
         Task<Category?> FetchCategoryAsync(Expression<Func<Category, bool>> predicate);

@@ -13,6 +13,12 @@ namespace ToDoAPI.Data.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        public async System.Threading.Tasks.Task UpdateCategoryAsync(Category category)
+        {
+            _dbContext.Categories.Update(category);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async System.Threading.Tasks.Task DeleteCategoryAsync(Category category)
         {
             _dbContext.Categories.Remove(category);

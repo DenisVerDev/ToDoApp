@@ -12,6 +12,12 @@ namespace ToDoAPI.Data.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task UpdateTaskAsync(Models.Task task)
+        {
+            _dbContext.Tasks.Update(task);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task DeleteTaskAsync(Models.Task task)
         {
             _dbContext.Tasks.Remove(task);

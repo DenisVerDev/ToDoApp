@@ -8,6 +8,8 @@ namespace ToDoAPI.Data.Repositories
     {
         Task AddTaskAsync(Models.Task task);
 
+        Task UpdateTaskAsync(Models.Task task);
+
         Task DeleteTaskAsync(Models.Task task);
 
         Task<Models.Task?> FetchTaskAsync(Expression<Func<Models.Task, bool>> predicate);
