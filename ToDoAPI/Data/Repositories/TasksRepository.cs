@@ -20,6 +20,10 @@ namespace ToDoAPI.Data.Repositories
 
         public async Task DeleteTaskAsync(Models.Task task)
         {
+            // we need to remove all categories from task, because there is NO ACTION rule for task side of CategoriesTasks and it will throw exc
+            task.Categories.Clear(); // its lazy loading right now
+            await UpdateTaskAsync(task);
+
             _dbContext.Tasks.Remove(task);
             await _dbContext.SaveChangesAsync();
         }
