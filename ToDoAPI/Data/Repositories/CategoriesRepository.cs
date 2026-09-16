@@ -24,6 +24,13 @@ namespace ToDoAPI.Data.Repositories
             _dbContext.Categories.Remove(category);
             await _dbContext.SaveChangesAsync();
         }
+
+        public async System.Threading.Tasks.Task DeleteCategoriesAsync(IEnumerable<Category> categories)
+        {
+            _dbContext.Categories.RemoveRange(categories);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task<Category?> FetchCategoryAsync(Expression<Func<Category, bool>> predicate)
             => await GetPredicateQuery(predicate).FirstOrDefaultAsync();
 

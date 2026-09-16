@@ -28,6 +28,17 @@ namespace ToDoAPI.Data.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task DeleteTasksAsync(IEnumerable<Models.Task> tasks)
+        {
+            foreach (var task in tasks)
+                task.Categories.Clear();
+
+            _dbContext.Tasks.UpdateRange(tasks);
+            _dbContext.Tasks.RemoveRange(tasks);
+
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task<Models.Task?> FetchTaskAsync(Expression<Func<Models.Task, bool>> predicate)
             => await GetPredicateQuery(predicate).FirstOrDefaultAsync();
 

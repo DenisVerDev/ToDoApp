@@ -12,6 +12,8 @@ namespace ToDoAPI.Data.Repositories
 
         Task DeleteTaskAsync(Models.Task task);
 
+        Task DeleteTasksAsync(IEnumerable<Models.Task> tasks);
+
         Task<Models.Task?> FetchTaskAsync(Expression<Func<Models.Task, bool>> predicate);
 
         Task<Models.Task?> FetchTaskAsync(Expression<Func<Models.Task, bool>> predicate, IFetchBuilder<Models.Task> fetchBuilder);
