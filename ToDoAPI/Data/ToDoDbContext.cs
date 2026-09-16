@@ -22,7 +22,7 @@ namespace ToDoAPI.Data
             ConfigureCategories(builder);
         }
 
-        private static void ConfigureTasks(ModelBuilder builder)
+        protected virtual void ConfigureTasks(ModelBuilder builder)
         {
             builder.Entity<Models.Task>(entity =>
             {
@@ -46,7 +46,7 @@ namespace ToDoAPI.Data
             });
         }
 
-        private static void ConfigureCategories(ModelBuilder builder)
+        protected virtual void ConfigureCategories(ModelBuilder builder)
         {
             builder.Entity<Models.Category>(entity =>
             {

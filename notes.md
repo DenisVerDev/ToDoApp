@@ -54,12 +54,13 @@ I am gonna use Code First approach.
 ### What I want to achieve
 |Task|Status|
 |-|-|
-|1. Design only neccessary DAL.|IN PROGRESS|
-|2. Fully create DAL.|IN PROGRESS|
+|1. Design only neccessary DAL.|DONE|
+|2. Fully create DAL.|DONE?|
 |3. Create xUnit tests for DAL.|Pending...|
 
 ### What I need to do
 1. ~~I need to add UpdateTaskAsync and UpdateCategoryAsync methods.~~
 2. ~~I need to check how ON DELETE CASCADE and ON DELETE NO ACTION is working and make a fix to deletion operations, so that BLL would not concern itself with such stuff.~~
-3. I need to understand and design how attaching and detaching categories will work.
-4. I need to think about seperating from ToDoDbContext to some abstraction.
+3. ~~I need to understand and design how attaching and detaching categories will work.~~
+4. ~~I need to think about seperating from ToDoDbContext to some abstraction.~~
+5. **Think about IUsersRepository and how it is supposed to be? Maybe not really? Like we have Identity that does all the work for us, though I am inexperienced in it, so I will wait untill I am actually working with it.**
