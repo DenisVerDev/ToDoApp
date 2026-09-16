@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ToDoAPI.Data.Models;
+using ToDoAPI.Data.Repositories;
 using ToDoAPI.Tests.Fixtures.Repositories;
 using Task = System.Threading.Tasks.Task;
 
@@ -24,28 +25,34 @@ namespace ToDoAPI.Tests.Repositories.Categories
         public async Task AddCategoryAsync_FreshCategory_AddsToRepo()
         {
             // Arrange
+            using var dbContext = _fixture.CreateDbContext();
+            var repository = new CategoriesRepository(dbContext);
+
             var category = new Category
             {
                 Name = Guid.NewGuid().ToString(),
                 Color = "FFFFFF",
-                AuthorId = _fixture.DbContext.Users.First().Id
+                AuthorId = dbContext.Users.First().Id
             };
 
             // Act
-            await _fixture.CR.AddCategoryAsync(category);
+            await repository.AddCategoryAsync(category);
 
             // Assert
-            Assert.True(await _fixture.CR.AnyCategoryAsync(c => c.Id == category.Id));
+            Assert.True(await repository.AnyCategoryAsync(c => c.Id == category.Id));
         }
 
         [Fact]
         public async Task AddCategoryAsync_DuplicateCategory_ThrowsDbUpdateException()
         {
             // Arrange
-            var duplicate = await _fixture.DbContext.Categories.FirstAsync();
+            using var dbContext = _fixture.CreateDbContext();
+            var repository = new CategoriesRepository(dbContext);
+
+            var duplicate = await dbContext.Categories.FirstAsync();
 
             // Act
-            var result = await Record.ExceptionAsync(() => _fixture.CR.AddCategoryAsync(duplicate));
+            var result = await Record.ExceptionAsync(() => repository.AddCategoryAsync(duplicate));
 
             // Assert
             Assert.NotNull(result);
@@ -56,7 +63,10 @@ namespace ToDoAPI.Tests.Repositories.Categories
         public async Task AddCategoryAsync_DiffNameAuthorSameId_ThrowsDbUpdateException() // tests unique constraint on Name and AuthorId
         {
             // Arrange
-            var specialDuplicate = await _fixture.DbContext.Categories.Select(c => new Category
+            using var dbContext = _fixture.CreateDbContext();
+            var repository = new CategoriesRepository(dbContext);
+
+            var specialDuplicate = await dbContext.Categories.Select(c => new Category
             {
                 Id = 100, // diff Id
                 Name = c.Name, // same Name
@@ -66,7 +76,7 @@ namespace ToDoAPI.Tests.Repositories.Categories
             
 
             // Act
-            var result = await Record.ExceptionAsync(() => _fixture.CR.AddCategoryAsync(specialDuplicate));
+            var result = await Record.ExceptionAsync(() => repository.AddCategoryAsync(specialDuplicate));
 
             // Assert
             Assert.NotNull(result);
@@ -76,8 +86,12 @@ namespace ToDoAPI.Tests.Repositories.Categories
         [Fact]
         public async Task AddCategoryAsync_NullCategory_ThrowsArgumentNullException()
         {
+            // Arrange
+            using var dbContext = _fixture.CreateDbContext();
+            var repository = new CategoriesRepository(dbContext);
+
             // Act
-            var result = await Record.ExceptionAsync(() => _fixture.CR.AddCategoryAsync(null));
+            var result = await Record.ExceptionAsync(() => repository.AddCategoryAsync(null));
 
             // Assert
             Assert.NotNull(result);

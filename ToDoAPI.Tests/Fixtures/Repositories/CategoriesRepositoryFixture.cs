@@ -10,35 +10,36 @@ namespace ToDoAPI.Tests.Fixtures.Repositories
 {
     public class CategoriesRepositoryFixture : BaseFixture
     {
-        public ICategoriesRepository CR { get; private set; }
-
         public CategoriesRepositoryFixture()
             : base()
+        {}
+
+        protected override void FillDatabase(ToDoDbContext dbContext)
         {
-            CR = new CategoriesRepository(DbContext);
-            FillCategories();
+            base.FillDatabase(dbContext);
+            FillCategories(dbContext);
         }
 
-        private void FillCategories()
+        private void FillCategories(ToDoDbContext dbContext)
         {
             for (int i = 0; i < _usersCount; i++)
             {
-                DbContext.Categories.Add(new Category
+                dbContext.Categories.Add(new Category
                 {
                     Name = $"category{i}",
                     Color = $"FFFFFF",
-                    AuthorId = DbContext.Users.Skip(i).Take(1).First().Id
+                    AuthorId = dbContext.Users.Skip(i).Take(1).First().Id
                 });
 
-                DbContext.Categories.Add(new Category
+                dbContext.Categories.Add(new Category
                 {
                     Name = $"category{i}_{i}",
                     Color = $"FFFFFF",
-                    AuthorId = DbContext.Users.Skip(i).Take(1).First().Id
+                    AuthorId = dbContext.Users.Skip(i).Take(1).First().Id
                 });
             }
 
-            DbContext.SaveChanges();
+            dbContext.SaveChanges();
         }
     }
 }

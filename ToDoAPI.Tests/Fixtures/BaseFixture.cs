@@ -9,7 +9,7 @@ namespace ToDoAPI.Tests.Fixtures
 {
     public class BaseFixture : IDisposable
     {
-        public ToDoDbContext DbContext { get; private set; }
+        private readonly DbContextOptions<ToDoDbContext> _options;
 
         public readonly int _usersCount;
 
@@ -17,19 +17,26 @@ namespace ToDoAPI.Tests.Fixtures
         {
             _usersCount = usersCount;
 
-            DbContext = new ToDoDbContext(new DbContextOptionsBuilder<ToDoDbContext>()
-                .UseSqlServer($"Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=ToDoApp{Guid.NewGuid().ToString()};Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;Command Timeout=30").Options); // I will think about making it more clean later
-        
-            DbContext.Database.EnsureCreated();
+            _options = new DbContextOptionsBuilder<ToDoDbContext>()
+                .UseSqlServer($"Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=ToDoApp{Guid.NewGuid().ToString()};Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;Command Timeout=30").Options; // I will think about making it more clean later
 
-            FillUsers();
+            using (var dbContext = CreateDbContext())
+            {
+                dbContext.Database.EnsureCreated();
+                FillDatabase(dbContext);
+            }
         }
 
-        protected virtual void FillUsers()
+        protected virtual void FillDatabase(ToDoDbContext dbContext)
+        {
+            FillUsers(dbContext);
+        }
+
+        protected virtual void FillUsers(ToDoDbContext dbContext)
         {
             for (int i = 0; i < _usersCount; i++)
             {
-                DbContext.Users.Add(new User
+                dbContext.Users.Add(new User
                 {
                     Id = Guid.NewGuid().ToString(),
                     UserName = $"test{i}@example.com",
@@ -40,13 +47,16 @@ namespace ToDoAPI.Tests.Fixtures
                 });
             }
 
-            DbContext.SaveChanges();
+            dbContext.SaveChanges();
         }
+
+        public ToDoDbContext CreateDbContext()
+            => new ToDoDbContext(_options);
 
         public void Dispose()
         {
-            DbContext.Database.EnsureDeleted();
-            DbContext.Dispose();
+            using(var dbContext = CreateDbContext())
+                dbContext.Database.EnsureDeleted();
         }
     }
 }
