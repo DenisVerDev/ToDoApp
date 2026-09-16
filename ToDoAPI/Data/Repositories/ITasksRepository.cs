@@ -8,7 +8,11 @@ namespace ToDoAPI.Data.Repositories
     {
         Task AddTaskAsync(Models.Task task);
 
+        Task AddTasksAsync(IEnumerable<Models.Task> tasks);
+
         Task UpdateTaskAsync(Models.Task task);
+
+        Task UpdateTasksAsync(IEnumerable<Models.Task> tasks);
 
         Task DeleteTaskAsync(Models.Task task);
 

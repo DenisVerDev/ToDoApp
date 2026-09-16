@@ -9,7 +9,11 @@ namespace ToDoAPI.Data.Repositories
     {
         Task AddCategoryAsync(Category category);
 
+        Task AddCategoriesAsync(IEnumerable<Category> categories);
+
         Task UpdateCategoryAsync(Category category);
+
+        Task UpdateCategoriesAsync(IEnumerable<Category> categories);
 
         Task DeleteCategoryAsync(Category category);
 

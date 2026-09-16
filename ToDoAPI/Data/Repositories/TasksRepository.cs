@@ -12,9 +12,21 @@ namespace ToDoAPI.Data.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task AddTasksAsync(IEnumerable<Models.Task> tasks)
+        {
+            await _dbContext.Tasks.AddRangeAsync(tasks);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task UpdateTaskAsync(Models.Task task)
         {
             _dbContext.Tasks.Update(task);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateTasksAsync(IEnumerable<Models.Task> tasks)
+        {
+            _dbContext.Tasks.UpdateRange(tasks);
             await _dbContext.SaveChangesAsync();
         }
 
@@ -33,7 +45,8 @@ namespace ToDoAPI.Data.Repositories
             foreach (var task in tasks)
                 task.Categories.Clear();
 
-            _dbContext.Tasks.UpdateRange(tasks);
+            await UpdateTasksAsync(tasks);
+
             _dbContext.Tasks.RemoveRange(tasks);
 
             await _dbContext.SaveChangesAsync();
