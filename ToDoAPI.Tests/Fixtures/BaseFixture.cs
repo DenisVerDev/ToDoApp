@@ -20,6 +20,8 @@ namespace ToDoAPI.Tests.Fixtures
             DbContext = new ToDoDbContext(new DbContextOptionsBuilder<ToDoDbContext>()
                 .UseSqlServer($"Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=ToDoApp{Guid.NewGuid().ToString()};Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;Command Timeout=30").Options); // I will think about making it more clean later
         
+            DbContext.Database.EnsureCreated();
+
             FillUsers();
         }
 

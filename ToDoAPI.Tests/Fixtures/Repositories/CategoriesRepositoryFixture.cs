@@ -27,16 +27,18 @@ namespace ToDoAPI.Tests.Fixtures.Repositories
                 {
                     Name = $"category{i}",
                     Color = $"FFFFFF",
-                    AuthorId = DbContext.Users.Find(i+1).Id
+                    AuthorId = DbContext.Users.Skip(i).Take(1).First().Id
                 });
 
                 DbContext.Categories.Add(new Category
                 {
                     Name = $"category{i}_{i}",
                     Color = $"FFFFFF",
-                    AuthorId = DbContext.Users.Find(i + 1).Id
+                    AuthorId = DbContext.Users.Skip(i).Take(1).First().Id
                 });
             }
+
+            DbContext.SaveChanges();
         }
     }
 }

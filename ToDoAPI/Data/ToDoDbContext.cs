@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 using ToDoAPI.Data.Models;
 
 namespace ToDoAPI.Data
@@ -71,6 +72,26 @@ namespace ToDoAPI.Data
                   .OnDelete(DeleteBehavior.Cascade)
                   .IsRequired();
             });
+
+            builder.Entity<Category>()
+                .HasMany(c => c.Tasks)
+                .WithMany(t => t.Categories)
+                .UsingEntity<Dictionary<string, object>>(
+                    "CategoriesTasks",
+                    j => j
+                        .HasOne<Models.Task>()
+                        .WithMany()
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.NoAction),
+                    j => j
+                        .HasOne<Category>()
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    j =>
+                    {
+                        j.HasKey("CategoryId", "TaskId");
+                    });
         }
     }
 }
