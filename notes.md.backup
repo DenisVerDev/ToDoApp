@@ -48,3 +48,18 @@ I am gonna use Code First approach.
 |4. Decide the approach in building DAL.|DONE|
 |5. Fully create DAL.|IN PROGRESS|
 |6. Create xUnit tests for DAL.|Pending...|
+
+## 16.09.2026
+
+### What I want to achieve
+|Task|Status|
+|-|-|
+|1. Design only neccessary DAL.|IN PROGRESS|
+|2. Fully create DAL.|IN PROGRESS|
+|3. Create xUnit tests for DAL.|Pending...|
+
+### What I need to do
+1. I need to add UpdateTaskAsync and UpdateCategoryAsync methods.
+2. I need to check how ON DELETE CASCADE and ON DELETE NO ACTION is working and make a fix to deletion operations, so that BLL would not concern itself with such stuff.
+3. I need to understand and design how attaching and detaching categories will work.
+4. I need to think about seperating from ToDoDbContext to some abstraction.
