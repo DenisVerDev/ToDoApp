@@ -6,6 +6,8 @@ namespace ToDoAPI.Data.Repositories
 {
     public class TasksRepository (ToDoDbContext _dbContext) : ITasksRepository
     {
+        #region Add
+
         public async Task AddTaskAsync(Models.Task task)
         {
             await _dbContext.Tasks.AddAsync(task);
@@ -18,6 +20,10 @@ namespace ToDoAPI.Data.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        #endregion
+
+        #region Update
+
         public async Task UpdateTaskAsync(Models.Task task)
         {
             _dbContext.Tasks.Update(task);
@@ -29,6 +35,10 @@ namespace ToDoAPI.Data.Repositories
             _dbContext.Tasks.UpdateRange(tasks);
             await _dbContext.SaveChangesAsync();
         }
+
+        #endregion
+
+        #region Delete
 
         public async Task DeleteTaskAsync(Models.Task task)
         {
@@ -52,6 +62,10 @@ namespace ToDoAPI.Data.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        #endregion
+
+        #region Fetch
+
         public async Task<Models.Task?> FetchTaskAsync(Expression<Func<Models.Task, bool>> predicate)
             => await GetPredicateQuery(predicate).FirstOrDefaultAsync();
 
@@ -64,10 +78,20 @@ namespace ToDoAPI.Data.Repositories
         public async Task<List<Models.Task>> FetchTasksAsync(Expression<Func<Models.Task, bool>> predicate, IFetchBuilder<Models.Task> fetchBuilder)
             => await fetchBuilder.Build(GetPredicateQuery(predicate)).ToListAsync();
 
+        #endregion
+
+        #region Other
+
         public async Task<bool> AnyTaskAsync(Expression<Func<Models.Task, bool>> predicate)
             => await _dbContext.Tasks.AnyAsync(predicate);
-    
+
+        #endregion
+
+        #region Hidden Inner Methods
+
         private IQueryable<Models.Task> GetPredicateQuery(Expression<Func<Models.Task, bool>> predicate)
             => _dbContext.Tasks.Where(predicate).AsQueryable();
+
+        #endregion
     }
 }
