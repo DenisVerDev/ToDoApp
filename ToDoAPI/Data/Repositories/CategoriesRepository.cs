@@ -83,5 +83,18 @@ namespace ToDoAPI.Data.Repositories
             => _dbContext.Categories.Where(predicate).AsQueryable();
 
         #endregion
+
+        #region ISnapshot<Category>
+
+        public object TakeSnapshot(Category obj)
+            => new { obj.Id, obj.Name, obj.Color, obj.AuthorId };
+
+        public object[] TakeSnapshot(ICollection<Category> collection)
+            => collection.Select(c => new { c.Id, c.Name, c.Color, c.AuthorId }).ToArray();
+
+        public async Task<object[]> TakeSnapshotAsync()
+            => await _dbContext.Categories.Select(c => new { c.Id, c.Name, c.Color, c.AuthorId }).ToArrayAsync();
+
+        #endregion
     }
 }

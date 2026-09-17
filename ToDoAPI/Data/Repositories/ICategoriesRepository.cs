@@ -1,11 +1,12 @@
 ﻿using System.Linq.Expressions;
 using ToDoAPI.Data.Models;
 using ToDoAPI.Data.Repositories.FetchBuilder;
+using ToDoAPI.Data.Tools;
 using Task = System.Threading.Tasks.Task;
 
 namespace ToDoAPI.Data.Repositories
 {
-    public interface ICategoriesRepository
+    public interface ICategoriesRepository : ISnapshot<Category>
     {
         Task AddCategoryAsync(Category category);
 

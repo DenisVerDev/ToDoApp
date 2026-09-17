@@ -121,19 +121,19 @@ namespace ToDoAPI.Tests.Repositories.Categories
                     AuthorId = authorId
                 });
             }
-
-            var beforeSnapshot = await dbContext.Categories.Select(c => new { c.Id, c.Name, c.Color, c.AuthorId }).ToListAsync();
+            var beforeSnapshot = await repository.TakeSnapshotAsync();
 
             // Act
             await repository.AddCategoriesAsync(categories);
 
             // Assert
-            var afterSnapshot = await dbContext.Categories.Select(c => new {c.Id, c.Name, c.Color, c.AuthorId}).ToListAsync();
-            
+            var categoriesSnapshot = repository.TakeSnapshot(categories);
+            var afterSnapshot = await repository.TakeSnapshotAsync();
+
             Assert.NotEqual(beforeSnapshot, afterSnapshot);
-            Assert.NotEqual(beforeSnapshot.Count, afterSnapshot.Count);
-            //Assert.Contains() // CHANGE
-            Assert.True(afterSnapshot.Count == beforeSnapshot.Count + categories.Count);
+            Assert.All(categoriesSnapshot, c => Assert.Contains(c, afterSnapshot));
+            Assert.NotEqual(beforeSnapshot.Count(), afterSnapshot.Count());
+            Assert.True(afterSnapshot.Count() == beforeSnapshot.Count() + categories.Count);
         }
 
         [Fact]
@@ -184,14 +184,16 @@ namespace ToDoAPI.Tests.Repositories.Categories
             using var dbContext = _fixture.CreateDbContext();
             var repository = new CategoriesRepository(dbContext);
 
-            var categoriesCount = await dbContext.Categories.CountAsync();
+            var beforeSnapshot = await repository.TakeSnapshotAsync();
 
             // Act
             var result = await Record.ExceptionAsync(() => repository.AddCategoriesAsync(new List<Category>()));
 
             // Assert
+            var afterSnapshot = await repository.TakeSnapshotAsync();
+
             Assert.Null(result);
-            Assert.Equal(categoriesCount, await dbContext.Categories.CountAsync()); // CHANGE
+            Assert.Equal(beforeSnapshot, afterSnapshot);
         }
 
         [Fact]

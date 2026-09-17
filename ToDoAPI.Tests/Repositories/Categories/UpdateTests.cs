@@ -48,13 +48,13 @@ namespace ToDoAPI.Tests.Repositories.Categories
             using var dbContext = _fixture.CreateDbContext();
             var repository = new CategoriesRepository(dbContext);
 
-            var beforeSnapshot = await dbContext.Categories.Select(c => new { c.Id, c.Name, c.Color, c.AuthorId }).ToListAsync();
+            var beforeSnapshot = await repository.TakeSnapshotAsync();
 
             // Act
             var result = await Record.ExceptionAsync(() => repository.UpdateCategoriesAsync(new List<Category>()));
 
             // Assert
-            var afterSnapshot = await dbContext.Categories.Select(c => new { c.Id, c.Name, c.Color, c.AuthorId }).ToListAsync();
+            var afterSnapshot = await repository.TakeSnapshotAsync();
 
             Assert.Null(result);
             Assert.Equal(beforeSnapshot, afterSnapshot);
