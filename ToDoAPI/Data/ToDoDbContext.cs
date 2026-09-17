@@ -35,7 +35,7 @@ namespace ToDoAPI.Data
 
                 entity.ToTable(t =>
                 {
-                    t.HasCheckConstraint("CK_Tasks_Title", "LEN(TRIM([Title])) > 1");
+                    t.HasCheckConstraint("CK_Tasks_Title", "LEN(TRIM([Title])) > 0");
                 });
 
                 entity.HasOne(x => x.Author)
@@ -59,7 +59,7 @@ namespace ToDoAPI.Data
 
                 entity.ToTable(t =>
                 {
-                    t.HasCheckConstraint("CK_Categories_Name", "LEN(TRIM([Name])) > 1");
+                    t.HasCheckConstraint("CK_Categories_Name", "LEN(TRIM([Name])) > 0");
                     t.HasCheckConstraint("CK_Categories_Color", "LEN(TRIM([Color])) >= 6"); // I don't know yet if '#' is gonna be there (#RRGGBB)
                 });
 
