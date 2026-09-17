@@ -122,11 +122,18 @@ namespace ToDoAPI.Tests.Repositories.Categories
                 });
             }
 
+            var beforeSnapshot = await dbContext.Categories.Select(c => new { c.Id, c.Name, c.Color, c.AuthorId }).ToListAsync();
+
             // Act
             await repository.AddCategoriesAsync(categories);
 
             // Assert
-            await Assert.AllAsync(categories, c => dbContext.Categories.ContainsAsync(c)); // here it looks by id
+            var afterSnapshot = await dbContext.Categories.Select(c => new {c.Id, c.Name, c.Color, c.AuthorId}).ToListAsync();
+            
+            Assert.NotEqual(beforeSnapshot, afterSnapshot);
+            Assert.NotEqual(beforeSnapshot.Count, afterSnapshot.Count);
+            //Assert.Contains() // CHANGE
+            Assert.True(afterSnapshot.Count == beforeSnapshot.Count + categories.Count);
         }
 
         [Fact]
@@ -184,7 +191,7 @@ namespace ToDoAPI.Tests.Repositories.Categories
 
             // Assert
             Assert.Null(result);
-            Assert.Equal(categoriesCount, await dbContext.Categories.CountAsync());
+            Assert.Equal(categoriesCount, await dbContext.Categories.CountAsync()); // CHANGE
         }
 
         [Fact]
