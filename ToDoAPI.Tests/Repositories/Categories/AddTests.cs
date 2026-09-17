@@ -39,7 +39,7 @@ namespace ToDoAPI.Tests.Repositories.Categories
             await repository.AddCategoryAsync(category);
 
             // Assert
-            Assert.True(await repository.AnyCategoryAsync(c => c.Id == category.Id));
+            Assert.True(await dbContext.Categories.AnyAsync(c => c.Id == category.Id));
         }
 
         [Fact]
@@ -96,6 +96,58 @@ namespace ToDoAPI.Tests.Repositories.Categories
             // Assert
             Assert.NotNull(result);
             Assert.IsType<ArgumentNullException>(result);
+        }
+
+        #endregion
+
+        #region Add One - Model Check
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public async Task AddCategoryAsync_NullOrEmptyName_ThrowsDbUpdateException(string? name)
+        {
+            // Arrange
+            using var dbContext = _fixture.CreateDbContext();
+            var repository = new CategoriesRepository(dbContext);
+
+            var category = new Category
+            {
+                Name = name,
+                Color = "FFFFFF",
+                AuthorId = dbContext.Users.First().Id
+            };
+
+            // Act
+            var result = await Record.ExceptionAsync(() => repository.AddCategoryAsync(category));
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<DbUpdateException>(result);
+        }
+
+        [Theory]
+        [InlineData("Spacecrafting")]
+        [InlineData("A")]
+        public async Task AddCategoryAsync_NameNotEmpty_AddsToRepo(string? name)
+        {
+            // Arrange
+            using var dbContext = _fixture.CreateDbContext();
+            var repository = new CategoriesRepository(dbContext);
+
+            var category = new Category
+            {
+                Name = name,
+                Color = "FFFFFF",
+                AuthorId = dbContext.Users.First().Id
+            };
+
+            // Act
+            var result = await Record.ExceptionAsync(() => repository.AddCategoryAsync(category));
+
+            // Assert
+            Assert.Null(result);
+            Assert.True(await dbContext.Categories.AnyAsync(c => c.Id == category.Id));
         }
 
         #endregion

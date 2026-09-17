@@ -64,3 +64,13 @@ I am gonna use Code First approach.
 3. ~~I need to understand and design how attaching and detaching categories will work.~~
 4. ~~I need to think about seperating from ToDoDbContext to some abstraction.~~
 5. **Think about IUsersRepository and how it is supposed to be? Maybe not really? Like we have Identity that does all the work for us, though I am inexperienced in it, so I will wait untill I am actually working with it.**
+
+
+## 17.09.2026
+
+### What I want to achive
+|Task|Status|
+|-|-|
+|1. Create xUnit tests for DAL.|IN PROGRESS|
+|2. Design Business Logic Layer (Services)|Pending...|
+|3. Implement Business Logic Layer (Services)|Pending...|
