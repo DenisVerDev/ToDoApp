@@ -30,6 +30,7 @@ namespace ToDoAPI.Data.Repositories
             _dbContext.Categories.Update(category);
             await _dbContext.SaveChangesAsync();
         }
+
         public async System.Threading.Tasks.Task UpdateCategoriesAsync(IEnumerable<Category> categories)
         {
             _dbContext.Categories.UpdateRange(categories);

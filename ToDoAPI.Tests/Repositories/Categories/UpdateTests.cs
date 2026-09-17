@@ -27,6 +27,49 @@ namespace ToDoAPI.Tests.Repositories.Categories
         #region Update One
 
         [Fact]
+        public async Task UpdateCategoryAsync_ChangeColor_UpdatesEntity()
+        {
+            // Arrange
+            var category = _dbContext.Categories.First();
+            category.Color = "BBBBBB";
+
+            // Act
+            await _repository.UpdateCategoryAsync(category);
+
+            // Assert
+            var categorySnapshot = _repository.TakeSnapshot(category);
+            var snapshot = await _repository.TakeSnapshotAsync();
+
+            Assert.Contains(categorySnapshot, snapshot);
+        }
+
+        [Fact]
+        public async Task UpdateCategoryAsync_FakeCategory_ThrowsDbUpdateConcurrencyException()
+        {
+            // Arrange
+            var category = _dbContext.Categories.AsNoTracking().First();
+            category.Id *= 1000;
+
+            // Act
+            var result = await Record.ExceptionAsync(() => _repository.UpdateCategoryAsync(category));
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<DbUpdateConcurrencyException>(result);
+        }
+
+        [Fact]
+        public async Task UpdateCategoryAsync_EmptyCategory_ThrowsDbUpdateException()
+        {
+            // Act
+            var result = await Record.ExceptionAsync(() => _repository.UpdateCategoryAsync(new Category()));
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<DbUpdateException>(result);
+        }
+
+        [Fact]
         public async Task UpdateCategoryAsync_NullCategory_ThrowsNullReferenceException()
         {
             // Act
@@ -43,7 +86,57 @@ namespace ToDoAPI.Tests.Repositories.Categories
         #region Update Many
 
         [Fact]
-        public async Task UpdateCategoriesAsync_EmptyCategories_DoesNothing()
+        public async Task UpdateCategoriesAsync_ChangeColor_UpdatesEntities()
+        {
+            // Arrange
+            var categories = _dbContext.Categories.Take(2).ToList();
+            categories.ForEach(c => c.Color = "YYYYYY");
+
+            // Act
+            await _repository.UpdateCategoriesAsync(categories);
+
+            // Assert
+            var categoriesSnapshot = _repository.TakeSnapshot(categories);
+            var snapshot = await _repository.TakeSnapshotAsync();
+
+            Assert.All(categoriesSnapshot, cs => Assert.Contains(cs, snapshot));
+        }
+
+        [Fact]
+        public async Task UpdateCategoriesAsync_FakeCategories_ThrowsDbUpdateConcurrencyException()
+        {
+            // Arrange
+            var categories = _dbContext.Categories.AsNoTracking().ToList();
+            categories.ForEach(c => c.Id *= 1000);
+
+            // Act
+            var result = await Record.ExceptionAsync(() => _repository.UpdateCategoriesAsync(categories));
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<DbUpdateConcurrencyException>(result);
+        }
+
+        [Fact]
+        public async Task UpdateCategoriesAsync_EmptyCategories_ThrowsDbUpdateException()
+        {
+            // Arrange
+            var categories = new List<Category>()
+            {
+                new Category(),
+                new Category()
+            };
+
+            // Act
+            var result = await Record.ExceptionAsync(() => _repository.UpdateCategoriesAsync(categories));
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<DbUpdateException>(result);
+        }
+
+        [Fact]
+        public async Task UpdateCategoriesAsync_EmptyCollection_DoesNothing()
         {
             // Arrange
             var beforeSnapshot = await _repository.TakeSnapshotAsync();
