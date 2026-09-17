@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ToDoAPI.Data;
 using ToDoAPI.Data.Models;
 using ToDoAPI.Data.Repositories;
 using ToDoAPI.Tests.Fixtures.Repositories;
@@ -10,13 +11,18 @@ using Task = System.Threading.Tasks.Task;
 namespace ToDoAPI.Tests.Repositories.Categories
 {
     [Collection("CategoriesRepositoryCollection")]
-    public class AddTests
+    public class AddTests : IDisposable
     {
         private CategoriesRepositoryFixture _fixture;
+        private ToDoDbContext _dbContext;
+        private ICategoriesRepository _repository;
 
         public AddTests(CategoriesRepositoryFixture fixture)
         {
             _fixture = fixture;
+
+            _dbContext = _fixture.CreateDbContext();
+            _repository = new CategoriesRepository(_dbContext);
         }
 
         #region Add One
@@ -25,34 +31,28 @@ namespace ToDoAPI.Tests.Repositories.Categories
         public async Task AddCategoryAsync_FreshCategory_AddsToRepo()
         {
             // Arrange
-            using var dbContext = _fixture.CreateDbContext();
-            var repository = new CategoriesRepository(dbContext);
-
             var category = new Category
             {
                 Name = Guid.NewGuid().ToString(),
                 Color = "FFFFFF",
-                AuthorId = dbContext.Users.First().Id
+                AuthorId = _dbContext.Users.First().Id
             };
 
             // Act
-            await repository.AddCategoryAsync(category);
+            await _repository.AddCategoryAsync(category);
 
             // Assert
-            Assert.True(await dbContext.Categories.AnyAsync(c => c.Id == category.Id));
+            Assert.True(await _dbContext.Categories.AnyAsync(c => c.Id == category.Id));
         }
 
         [Fact]
         public async Task AddCategoryAsync_DuplicateCategory_ThrowsDbUpdateException()
         {
             // Arrange
-            using var dbContext = _fixture.CreateDbContext();
-            var repository = new CategoriesRepository(dbContext);
-
-            var duplicate = await dbContext.Categories.FirstAsync();
+            var duplicate = await _dbContext.Categories.FirstAsync();
 
             // Act
-            var result = await Record.ExceptionAsync(() => repository.AddCategoryAsync(duplicate));
+            var result = await Record.ExceptionAsync(() => _repository.AddCategoryAsync(duplicate));
 
             // Assert
             Assert.NotNull(result);
@@ -63,10 +63,7 @@ namespace ToDoAPI.Tests.Repositories.Categories
         public async Task AddCategoryAsync_DiffNameAuthorSameId_ThrowsDbUpdateException() // tests unique constraint on Name and AuthorId
         {
             // Arrange
-            using var dbContext = _fixture.CreateDbContext();
-            var repository = new CategoriesRepository(dbContext);
-
-            var specialDuplicate = await dbContext.Categories.Select(c => new Category
+            var specialDuplicate = await _dbContext.Categories.Select(c => new Category
             {
                 Id = 100, // diff Id
                 Name = c.Name, // same Name
@@ -76,7 +73,7 @@ namespace ToDoAPI.Tests.Repositories.Categories
             
 
             // Act
-            var result = await Record.ExceptionAsync(() => repository.AddCategoryAsync(specialDuplicate));
+            var result = await Record.ExceptionAsync(() => _repository.AddCategoryAsync(specialDuplicate));
 
             // Assert
             Assert.NotNull(result);
@@ -86,12 +83,8 @@ namespace ToDoAPI.Tests.Repositories.Categories
         [Fact]
         public async Task AddCategoryAsync_NullCategory_ThrowsArgumentNullException()
         {
-            // Arrange
-            using var dbContext = _fixture.CreateDbContext();
-            var repository = new CategoriesRepository(dbContext);
-
             // Act
-            var result = await Record.ExceptionAsync(() => repository.AddCategoryAsync(null));
+            var result = await Record.ExceptionAsync(() => _repository.AddCategoryAsync(null));
 
             // Assert
             Assert.NotNull(result);
@@ -106,10 +99,9 @@ namespace ToDoAPI.Tests.Repositories.Categories
         public async Task AddCategoriesAsync_FreshCategories_AddsToRepo()
         {
             // Arrange
-            using var dbContext = _fixture.CreateDbContext();
-            var repository = new CategoriesRepository(dbContext);
+            var beforeSnapshot = await _repository.TakeSnapshotAsync();
 
-            var authorId = dbContext.Users.First().Id;
+            var authorId = _dbContext.Users.First().Id;
 
             var categories = new List<Category>();
             for(int i = 0; i < 4; i++)
@@ -121,14 +113,13 @@ namespace ToDoAPI.Tests.Repositories.Categories
                     AuthorId = authorId
                 });
             }
-            var beforeSnapshot = await repository.TakeSnapshotAsync();
 
             // Act
-            await repository.AddCategoriesAsync(categories);
+            await _repository.AddCategoriesAsync(categories);
 
             // Assert
-            var categoriesSnapshot = repository.TakeSnapshot(categories);
-            var afterSnapshot = await repository.TakeSnapshotAsync();
+            var categoriesSnapshot = _repository.TakeSnapshot(categories);
+            var afterSnapshot = await _repository.TakeSnapshotAsync();
 
             Assert.NotEqual(beforeSnapshot, afterSnapshot);
             Assert.All(categoriesSnapshot, c => Assert.Contains(c, afterSnapshot));
@@ -140,13 +131,10 @@ namespace ToDoAPI.Tests.Repositories.Categories
         public async Task AddCategoriesAsync_DuplicateCategories_ThrowsDbUpdateException()
         {
             // Arrange
-            using var dbContext = _fixture.CreateDbContext();
-            var repository = new CategoriesRepository(dbContext);
-
-            var duplicate = await dbContext.Categories.ToListAsync();
+            var duplicate = await _dbContext.Categories.ToListAsync();
 
             // Act
-            var result = await Record.ExceptionAsync(() => repository.AddCategoriesAsync(duplicate));
+            var result = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(duplicate));
 
             // Assert
             Assert.NotNull(result);
@@ -157,10 +145,7 @@ namespace ToDoAPI.Tests.Repositories.Categories
         public async Task AddCategoriesAsync_DiffNameAuthorSameId_ThrowsDbUpdateException() // tests unique constraint on Name and AuthorId
         {
             // Arrange
-            using var dbContext = _fixture.CreateDbContext();
-            var repository = new CategoriesRepository(dbContext);
-
-            var specialDuplicates = await dbContext.Categories.Select(c => new Category
+            var specialDuplicates = await _dbContext.Categories.Select(c => new Category
             {
                 Id = c.Id*100, // diff Id
                 Name = c.Name, // same Name
@@ -170,7 +155,7 @@ namespace ToDoAPI.Tests.Repositories.Categories
 
 
             // Act
-            var result = await Record.ExceptionAsync(() => repository.AddCategoriesAsync(specialDuplicates));
+            var result = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(specialDuplicates));
 
             // Assert
             Assert.NotNull(result);
@@ -181,16 +166,13 @@ namespace ToDoAPI.Tests.Repositories.Categories
         public async Task AddCategoriesAsync_EmptyCategories_DoesNothing()
         {
             // Arrange
-            using var dbContext = _fixture.CreateDbContext();
-            var repository = new CategoriesRepository(dbContext);
-
-            var beforeSnapshot = await repository.TakeSnapshotAsync();
+            var beforeSnapshot = await _repository.TakeSnapshotAsync();
 
             // Act
-            var result = await Record.ExceptionAsync(() => repository.AddCategoriesAsync(new List<Category>()));
+            var result = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(new List<Category>()));
 
             // Assert
-            var afterSnapshot = await repository.TakeSnapshotAsync();
+            var afterSnapshot = await _repository.TakeSnapshotAsync();
 
             Assert.Null(result);
             Assert.Equal(beforeSnapshot, afterSnapshot);
@@ -199,12 +181,8 @@ namespace ToDoAPI.Tests.Repositories.Categories
         [Fact]
         public async Task AddCategoriesAsync_NullCategories_ThrowsNullReferenceException()
         {
-            // Arrange
-            using var dbContext = _fixture.CreateDbContext();
-            var repository = new CategoriesRepository(dbContext);
-
             // Act
-            var result = await Record.ExceptionAsync(() => repository.AddCategoriesAsync(null));
+            var result = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(null));
 
             // Assert
             Assert.NotNull(result);
@@ -212,5 +190,10 @@ namespace ToDoAPI.Tests.Repositories.Categories
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            _dbContext.Dispose();
+        }
     }
 }

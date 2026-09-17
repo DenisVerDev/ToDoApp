@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ToDoAPI.Data;
 using ToDoAPI.Data.Models;
 using ToDoAPI.Data.Repositories;
 using ToDoAPI.Tests.Fixtures.Repositories;
@@ -10,13 +11,17 @@ using Task = System.Threading.Tasks.Task;
 namespace ToDoAPI.Tests.Repositories.Categories
 {
     [Collection("CategoriesRepositoryCollection")]
-    public class UpdateTests
+    public class UpdateTests : IDisposable
     {
         private CategoriesRepositoryFixture _fixture;
+        private ToDoDbContext _dbContext;
+        private ICategoriesRepository _repository;
 
         public UpdateTests(CategoriesRepositoryFixture fixture)
         {
             _fixture = fixture;
+            _dbContext = _fixture.CreateDbContext();
+            _repository = new CategoriesRepository(_dbContext);
         }
 
         #region Update One
@@ -24,12 +29,8 @@ namespace ToDoAPI.Tests.Repositories.Categories
         [Fact]
         public async Task UpdateCategoryAsync_NullCategory_ThrowsNullReferenceException()
         {
-            // Arrange
-            using var dbContext = _fixture.CreateDbContext();
-            var repository = new CategoriesRepository(dbContext);
-
             // Act
-            var result = await Record.ExceptionAsync(() => repository.UpdateCategoryAsync(null));
+            var result = await Record.ExceptionAsync(() => _repository.UpdateCategoryAsync(null));
 
             // Assert
             Assert.NotNull(result);
@@ -45,16 +46,13 @@ namespace ToDoAPI.Tests.Repositories.Categories
         public async Task UpdateCategoriesAsync_EmptyCategories_DoesNothing()
         {
             // Arrange
-            using var dbContext = _fixture.CreateDbContext();
-            var repository = new CategoriesRepository(dbContext);
-
-            var beforeSnapshot = await repository.TakeSnapshotAsync();
+            var beforeSnapshot = await _repository.TakeSnapshotAsync();
 
             // Act
-            var result = await Record.ExceptionAsync(() => repository.UpdateCategoriesAsync(new List<Category>()));
+            var result = await Record.ExceptionAsync(() => _repository.UpdateCategoriesAsync(new List<Category>()));
 
             // Assert
-            var afterSnapshot = await repository.TakeSnapshotAsync();
+            var afterSnapshot = await _repository.TakeSnapshotAsync();
 
             Assert.Null(result);
             Assert.Equal(beforeSnapshot, afterSnapshot);
@@ -63,12 +61,8 @@ namespace ToDoAPI.Tests.Repositories.Categories
         [Fact]
         public async Task UpdateCategoriesAsync_NullCategories_ThrowsArgumentNullException()
         {
-            // Arrange
-            using var dbContext = _fixture.CreateDbContext();
-            var repository = new CategoriesRepository(dbContext);
-
             // Act
-            var result = await Record.ExceptionAsync(() => repository.UpdateCategoriesAsync(null));
+            var result = await Record.ExceptionAsync(() => _repository.UpdateCategoriesAsync(null));
 
             // Assert
             Assert.NotNull(result);
@@ -76,5 +70,10 @@ namespace ToDoAPI.Tests.Repositories.Categories
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            _dbContext.Dispose();
+        }
     }
 }
