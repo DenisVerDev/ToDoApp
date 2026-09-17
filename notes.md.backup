@@ -74,3 +74,7 @@ I am gonna use Code First approach.
 |1. Create xUnit tests for DAL.|IN PROGRESS|
 |2. Design Business Logic Layer (Services)|Pending...|
 |3. Implement Business Logic Layer (Services)|Pending...|
+
+### What I need to do
+1. Apparently, my Assert.AllAsync are not what I thought they are and I must remove them.
+2. I need to track changes in the database, so that I can check if anything recently was changed. Or create a class which will 
