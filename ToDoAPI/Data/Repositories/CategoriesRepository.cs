@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
 using ToDoAPI.Data.Models;
 using ToDoAPI.Data.Repositories.FetchBuilder;
@@ -17,6 +18,12 @@ namespace ToDoAPI.Data.Repositories
 
         public async System.Threading.Tasks.Task AddCategoriesAsync(IEnumerable<Category> categories)
         {
+            if(categories is null)
+                throw new ArgumentNullException(nameof(categories));
+
+            if (!categories.Any())
+                throw new ArgumentException(nameof(categories));
+
             await _dbContext.Categories.AddRangeAsync(categories);
             await _dbContext.SaveChangesAsync();
         }

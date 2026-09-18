@@ -57,7 +57,7 @@ namespace ToDoAPI.Tests.Repositories.Categories
         }
 
         [Fact]
-        public async Task DeleteCategoryAsync_FakeCategory_ThrowsException()
+        public async Task DeleteCategoryAsync_DifferentId_ThrowsException()
         {
             // Arrange
             var category = await _dbContext.Categories.FirstAsync();
@@ -138,7 +138,7 @@ namespace ToDoAPI.Tests.Repositories.Categories
         }
 
         [Fact]
-        public async Task DeleteCategoriesAsync_FakeCategories_ThrowsException()
+        public async Task DeleteCategoriesAsync_DifferentIds_ThrowsException()
         {
             // Arrange
             var categories = await _dbContext.Categories.ToListAsync();
@@ -152,7 +152,7 @@ namespace ToDoAPI.Tests.Repositories.Categories
         }
 
         [Fact]
-        public async Task DeleteCategoriesAsync_SameIdDifferentSignature_ThrowsException()
+        public async Task DeleteCategoriesAsync_SameIdsDifferentSignatures_ThrowsException()
         {
             // Arrange
             var categories = await _dbContext.Categories.ToListAsync();
