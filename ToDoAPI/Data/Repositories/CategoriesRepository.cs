@@ -98,11 +98,17 @@ namespace ToDoAPI.Data.Repositories
         public async Task<Category?> FetchCategoryAsync(Expression<Func<Category, bool>> predicate)
             => await GetPredicateQuery(predicate).AsNoTracking().FirstOrDefaultAsync();
 
+        public async Task<Category?> FetchCategoryAsync(IFetchBuilder<Category> fetchBuilder)
+            => await fetchBuilder.Build(_dbContext.Categories.AsQueryable()).FirstOrDefaultAsync();
+
         public async Task<Category?> FetchCategoryAsync(Expression<Func<Category, bool>> predicate, IFetchBuilder<Category> fetchBuilder)
             => await fetchBuilder.Build(GetPredicateQuery(predicate)).AsNoTracking().FirstOrDefaultAsync();
 
         public async Task<List<Category>> FetchCategoriesAsync(Expression<Func<Category, bool>> predicate)
             => await GetPredicateQuery(predicate).AsNoTracking().ToListAsync();
+
+        public async Task<List<Category>> FetchCategoriesAsync(IFetchBuilder<Category> fetchBuilder)
+            => await fetchBuilder.Build(_dbContext.Categories.AsQueryable()).ToListAsync();
 
         public async Task<List<Category>> FetchCategoriesAsync(Expression<Func<Category, bool>> predicate, IFetchBuilder<Category> fetchBuilder)
             => await fetchBuilder.Build(GetPredicateQuery(predicate)).AsNoTracking().ToListAsync();

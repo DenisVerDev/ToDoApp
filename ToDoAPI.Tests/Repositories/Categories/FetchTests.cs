@@ -1,10 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using ToDoAPI.Data;
+using ToDoAPI.Data.Models;
 using ToDoAPI.Data.Repositories;
 using ToDoAPI.Tests.Fixtures.Repositories;
+using Task = System.Threading.Tasks.Task;
 
 namespace ToDoAPI.Tests.Repositories.Categories
 {
@@ -64,7 +67,7 @@ namespace ToDoAPI.Tests.Repositories.Categories
         public async Task FetchCategoryAsync_NullPredicate_ThrowsException()
         {
             // Act
-            var record = await Record.ExceptionAsync(() => _repository.FetchCategoryAsync(null));
+            var record = await Record.ExceptionAsync(() => _repository.FetchCategoryAsync((Expression<Func<Category, bool>>) null));
 
             // Assert
             Assert.NotNull(record);
@@ -116,7 +119,7 @@ namespace ToDoAPI.Tests.Repositories.Categories
         public async Task FetchCategoriesAsync_NullPredicate_ThrowsException()
         {
             // Act
-            var record = await Record.ExceptionAsync(() => _repository.FetchCategoriesAsync(null));
+            var record = await Record.ExceptionAsync(() => _repository.FetchCategoriesAsync((Expression<Func<Category, bool>>) null));
 
             // Assert
             Assert.NotNull(record);

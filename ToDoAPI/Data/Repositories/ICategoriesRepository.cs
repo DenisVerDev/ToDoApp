@@ -22,9 +22,13 @@ namespace ToDoAPI.Data.Repositories
 
         Task<Category?> FetchCategoryAsync(Expression<Func<Category, bool>> predicate);
 
+        Task<Category?> FetchCategoryAsync(IFetchBuilder<Category> fetchBuilder);
+
         Task<Category?> FetchCategoryAsync(Expression<Func<Category, bool>> predicate, IFetchBuilder<Category> fetchBuilder);
 
         Task<List<Category>> FetchCategoriesAsync(Expression<Func<Category, bool>> predicate);
+
+        Task<List<Category>> FetchCategoriesAsync(IFetchBuilder<Category> fetchBuilder);
 
         Task<List<Category>> FetchCategoriesAsync(Expression<Func<Category, bool>> predicate, IFetchBuilder<Category> fetchBuilder);
 
