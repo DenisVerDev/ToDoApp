@@ -40,6 +40,12 @@ namespace ToDoAPI.Data.Repositories
 
         public async System.Threading.Tasks.Task UpdateCategoriesAsync(IEnumerable<Category> categories)
         {
+            if (categories is null)
+                throw new ArgumentNullException(nameof(categories));
+
+            if (!categories.Any())
+                throw new ArgumentException(nameof(categories));
+
             _dbContext.Categories.UpdateRange(categories);
             await _dbContext.SaveChangesAsync();
         }

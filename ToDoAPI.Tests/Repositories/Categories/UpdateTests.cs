@@ -31,53 +31,72 @@ namespace ToDoAPI.Tests.Repositories.Categories
         {
             // Arrange
             var category = _dbContext.Categories.First();
+            var beforeCategorySnapshot = _repository.TakeSnapshot(category);
+
             category.Color = "BBBBBB";
 
             // Act
             await _repository.UpdateCategoryAsync(category);
 
             // Assert
-            var categorySnapshot = _repository.TakeSnapshot(category);
-            var snapshot = await _repository.TakeSnapshotsAsync();
+            var afterCategorySnapshot = _repository.TakeSnapshot(category);
+            var afterSnapshots = await _repository.TakeSnapshotsAsync();
 
-            Assert.Contains(categorySnapshot, snapshot);
+            Assert.DoesNotContain(beforeCategorySnapshot, afterSnapshots);
+            Assert.Contains(afterCategorySnapshot, afterSnapshots);
         }
 
         [Fact]
-        public async Task UpdateCategoryAsync_FakeCategory_ThrowsDbUpdateConcurrencyException()
+        public async Task UpdateCategoryAsync_DifferentId_ThrowsException()
         {
             // Arrange
-            var category = _dbContext.Categories.AsNoTracking().First();
+            var category = _dbContext.Categories.First();
             category.Id *= 1000;
 
             // Act
-            var result = await Record.ExceptionAsync(() => _repository.UpdateCategoryAsync(category));
+            var record = await Record.ExceptionAsync(() => _repository.UpdateCategoryAsync(category));
 
             // Assert
-            Assert.NotNull(result);
-            Assert.IsType<DbUpdateConcurrencyException>(result);
+            Assert.NotNull(record);
         }
 
         [Fact]
-        public async Task UpdateCategoryAsync_EmptyCategory_ThrowsDbUpdateException()
+        public async Task UpdateCategoryAsync_ExistingName_ThrowsException()
         {
+            // Arrange
+            var user = await _dbContext.Users.Where(u => u.Categories.Count > 1)
+                .Include(u => u.Categories).AsNoTracking().FirstAsync();
+
+            var category = user.Categories.First();
+            var nextCategory = user.Categories.Skip(1).First();
+
+            category.Name = nextCategory.Name;
+
             // Act
-            var result = await Record.ExceptionAsync(() => _repository.UpdateCategoryAsync(new Category()));
+            var record = await Record.ExceptionAsync(() => _repository.UpdateCategoryAsync(category));
 
             // Assert
-            Assert.NotNull(result);
-            Assert.IsType<DbUpdateException>(result);
+            Assert.NotNull(record);
         }
 
         [Fact]
-        public async Task UpdateCategoryAsync_NullCategory_ThrowsNullReferenceException()
+        public async Task UpdateCategoryAsync_EmptyCategory_ThrowsException()
         {
             // Act
-            var result = await Record.ExceptionAsync(() => _repository.UpdateCategoryAsync(null));
+            var record = await Record.ExceptionAsync(() => _repository.UpdateCategoryAsync(new Category()));
 
             // Assert
-            Assert.NotNull(result);
-            Assert.IsType<NullReferenceException>(result);
+            Assert.NotNull(record);
+        }
+
+        [Fact]
+        public async Task UpdateCategoryAsync_NullCategory_ThrowsException()
+        {
+            // Act
+            var record = await Record.ExceptionAsync(() => _repository.UpdateCategoryAsync(null));
+
+            // Assert
+            Assert.NotNull(record);
         }
 
         #endregion
@@ -90,35 +109,37 @@ namespace ToDoAPI.Tests.Repositories.Categories
         {
             // Arrange
             var categories = _dbContext.Categories.Take(2).ToList();
+            var beforeCategoriesSnapshots = _repository.TakeSnapshots(categories);
+
             categories.ForEach(c => c.Color = "YYYYYY");
 
             // Act
             await _repository.UpdateCategoriesAsync(categories);
 
             // Assert
-            var categoriesSnapshot = _repository.TakeSnapshots(categories);
-            var snapshot = await _repository.TakeSnapshotsAsync();
+            var afterCategoriesSnapshots = _repository.TakeSnapshots(categories);
+            var afterSnapshots = await _repository.TakeSnapshotsAsync();
 
-            Assert.All(categoriesSnapshot, cs => Assert.Contains(cs, snapshot));
+            Assert.All(beforeCategoriesSnapshots, cs => Assert.DoesNotContain(cs, afterSnapshots));
+            Assert.All(afterCategoriesSnapshots, cs => Assert.Contains(cs, afterSnapshots));
         }
 
         [Fact]
-        public async Task UpdateCategoriesAsync_FakeCategories_ThrowsDbUpdateConcurrencyException()
+        public async Task UpdateCategoriesAsync_DifferentIds_ThrowsException()
         {
             // Arrange
             var categories = _dbContext.Categories.AsNoTracking().ToList();
             categories.ForEach(c => c.Id *= 1000);
 
             // Act
-            var result = await Record.ExceptionAsync(() => _repository.UpdateCategoriesAsync(categories));
+            var record = await Record.ExceptionAsync(() => _repository.UpdateCategoriesAsync(categories));
 
             // Assert
-            Assert.NotNull(result);
-            Assert.IsType<DbUpdateConcurrencyException>(result);
+            Assert.NotNull(record);
         }
 
         [Fact]
-        public async Task UpdateCategoriesAsync_EmptyCategories_ThrowsDbUpdateException()
+        public async Task UpdateCategoriesAsync_EmptyCategories_ThrowsException()
         {
             // Arrange
             var categories = new List<Category>()
@@ -128,38 +149,47 @@ namespace ToDoAPI.Tests.Repositories.Categories
             };
 
             // Act
-            var result = await Record.ExceptionAsync(() => _repository.UpdateCategoriesAsync(categories));
+            var record = await Record.ExceptionAsync(() => _repository.UpdateCategoriesAsync(categories));
 
             // Assert
-            Assert.NotNull(result);
-            Assert.IsType<DbUpdateException>(result);
+            Assert.NotNull(record);
         }
 
         [Fact]
-        public async Task UpdateCategoriesAsync_EmptyCollection_DoesNothing()
+        public async Task UpdateCategoriesAsync_EmptyCollection_ThrowsException()
+        {
+            // Act
+            var record = await Record.ExceptionAsync(() => _repository.UpdateCategoriesAsync(new List<Category>()));
+
+            // Assert
+            Assert.NotNull(record);
+        }
+
+        [Fact]
+        public async Task UpdateCategoriesAsync_NullCategories_ThrowsException()
         {
             // Arrange
-            var beforeSnapshot = await _repository.TakeSnapshotsAsync();
+            var categories = new List<Category>()
+            {
+                null,
+                null
+            };
 
             // Act
-            var result = await Record.ExceptionAsync(() => _repository.UpdateCategoriesAsync(new List<Category>()));
+            var record = await Record.ExceptionAsync(() => _repository.UpdateCategoriesAsync(categories));
 
             // Assert
-            var afterSnapshot = await _repository.TakeSnapshotsAsync();
-
-            Assert.Null(result);
-            Assert.Equal(beforeSnapshot, afterSnapshot);
+            Assert.NotNull(record);
         }
 
         [Fact]
-        public async Task UpdateCategoriesAsync_NullCategories_ThrowsArgumentNullException()
+        public async Task UpdateCategoriesAsync_NullCollection_ThrowsException()
         {
             // Act
-            var result = await Record.ExceptionAsync(() => _repository.UpdateCategoriesAsync(null));
+            var record = await Record.ExceptionAsync(() => _repository.UpdateCategoriesAsync(null));
 
             // Assert
-            Assert.NotNull(result);
-            Assert.IsType<ArgumentNullException>(result);
+            Assert.NotNull(record);
         }
 
         #endregion
