@@ -30,6 +30,13 @@ namespace ToDoAPI.Tests.Fixtures.Repositories
                     AuthorId = categories[i].AuthorId,
                     //Categories = new List<Category>() { categories[i] }
                 });
+
+                dbContext.Tasks.Add(new Data.Models.Task()
+                {
+                    Title = $"task{i}_{i}",
+                    AuthorId = categories[i].AuthorId,
+                    //Categories = new List<Category>() { categories[i] }
+                });
             }
 
             dbContext.SaveChanges();

@@ -99,5 +99,46 @@ namespace ToDoAPI.Data.Repositories
             => _dbContext.Tasks.Where(predicate).AsQueryable();
 
         #endregion
+
+        #region ISnapshot<Models.Task>
+
+        public object TakeSnapshot(Models.Task obj)
+            => new { obj.Id, obj.Title, obj.Description, obj.AuthorId };
+
+        public object TakeSnapshot(ICollection<Models.Task> collection)
+        {
+            var snapshots = TakeSnapshots(collection);
+            return new { CollectionSnapshot = String.Join(",", collection.Select(t => t.ToString())) };
+        }
+
+        public object[] TakeSnapshots(ICollection<Models.Task> collection)
+            => collection.Select(t => new { t.Id, t.Title, t.Description, t.AuthorId }).ToArray();
+
+        public async Task<object> TakeSnapshotAsync()
+        {
+            var snapshots = await TakeSnapshotsAsync();
+            return new { CollectionSnapshot = String.Join(",", snapshots.Select(s => s.ToString())) };
+        }
+
+        public async Task<object[]> TakeSnapshotsAsync()
+            => await _dbContext.Tasks.Select(t => new { t.Id, t.Title, t.Description, t.AuthorId }).ToArrayAsync();
+
+        public bool CompareSnapshots(Models.Task first, Models.Task second)
+        {
+            var firstSnapshot = TakeSnapshot(first);
+            var secondSnapshot = TakeSnapshot(second);
+
+            return firstSnapshot.Equals(secondSnapshot);
+        }
+
+        public bool CompareSnapshots(ICollection<Models.Task> first, ICollection<Models.Task> second)
+        {
+            var firstSnapshot = TakeSnapshot(first);
+            var secondSnapshot = TakeSnapshot(second);
+
+            return firstSnapshot.Equals(secondSnapshot);
+        }
+
+        #endregion
     }
 }

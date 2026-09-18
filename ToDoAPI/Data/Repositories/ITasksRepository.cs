@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using ToDoAPI.Data.Repositories.FetchBuilder;
+using ToDoAPI.Data.Tools;
 
 namespace ToDoAPI.Data.Repositories
 {
-    public interface ITasksRepository
+    public interface ITasksRepository : ISnapshot<Models.Task>
     {
         Task AddTaskAsync(Models.Task task);
 
