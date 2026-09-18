@@ -20,9 +20,13 @@ namespace ToDoAPI.Data.Repositories
 
         Task<Models.Task?> FetchTaskAsync(Expression<Func<Models.Task, bool>> predicate);
 
+        Task<Models.Task?> FetchTaskAsync(IFetchBuilder<Models.Task> fetchBuilder);
+
         Task<Models.Task?> FetchTaskAsync(Expression<Func<Models.Task, bool>> predicate, IFetchBuilder<Models.Task> fetchBuilder);
 
         Task<List<Models.Task>> FetchTasksAsync(Expression<Func<Models.Task, bool>> predicate);
+
+        Task<List<Models.Task>> FetchTasksAsync(IFetchBuilder<Models.Task> fetchBuilder);
 
         Task<List<Models.Task>> FetchTasksAsync(Expression<Func<Models.Task, bool>> predicate, IFetchBuilder<Models.Task> fetchBuilder);
 

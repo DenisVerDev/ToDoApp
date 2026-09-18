@@ -69,11 +69,17 @@ namespace ToDoAPI.Data.Repositories
         public async Task<Models.Task?> FetchTaskAsync(Expression<Func<Models.Task, bool>> predicate)
             => await GetPredicateQuery(predicate).FirstOrDefaultAsync();
 
+        public async Task<Models.Task?> FetchTaskAsync(IFetchBuilder<Models.Task> fetchBuilder)
+            => await fetchBuilder.Build(_dbContext.Tasks.AsQueryable()).FirstOrDefaultAsync();
+
         public async Task<Models.Task?> FetchTaskAsync(Expression<Func<Models.Task, bool>> predicate, IFetchBuilder<Models.Task> fetchBuilder)
              => await fetchBuilder.Build(GetPredicateQuery(predicate)).FirstOrDefaultAsync();
 
         public async Task<List<Models.Task>> FetchTasksAsync(Expression<Func<Models.Task, bool>> predicate)
              => await GetPredicateQuery(predicate).ToListAsync();
+
+        public async Task<List<Models.Task>> FetchTasksAsync(IFetchBuilder<Models.Task> fetchBuilder)
+            => await fetchBuilder.Build(_dbContext.Tasks.AsQueryable()).ToListAsync();
 
         public async Task<List<Models.Task>> FetchTasksAsync(Expression<Func<Models.Task, bool>> predicate, IFetchBuilder<Models.Task> fetchBuilder)
             => await fetchBuilder.Build(GetPredicateQuery(predicate)).ToListAsync();
