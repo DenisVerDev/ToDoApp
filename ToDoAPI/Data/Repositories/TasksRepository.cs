@@ -42,6 +42,17 @@ namespace ToDoAPI.Data.Repositories
 
         public async Task DeleteTaskAsync(Models.Task task)
         {
+            if(task is null)
+                throw new ArgumentNullException(nameof(task));
+
+            var original = await FetchTaskAsync(t => t.Id == task.Id);
+
+            if (original is null)
+                throw new Exception();
+
+            if (!CompareSnapshots(task, original))
+                throw new Exception();
+
             // we need to remove all categories from task, because there is NO ACTION rule for task side of CategoriesTasks and it will throw exc
             task.Categories.Clear(); // its lazy loading right now
             await UpdateTaskAsync(task);
@@ -50,8 +61,19 @@ namespace ToDoAPI.Data.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task DeleteTasksAsync(IEnumerable<Models.Task> tasks)
+        public async Task DeleteTasksAsync(ICollection<Models.Task> tasks)
         {
+            if (tasks is null)
+                throw new ArgumentNullException(nameof(tasks));
+
+            if (!tasks.Any())
+                throw new ArgumentException(nameof(tasks));
+
+            var originals = await FetchTasksAsync(t => tasks.Contains(t));
+
+            if(!CompareSnapshots(tasks, originals))
+                throw new Exception();
+
             foreach (var task in tasks)
                 task.Categories.Clear();
 
@@ -67,22 +89,22 @@ namespace ToDoAPI.Data.Repositories
         #region Fetch
 
         public async Task<Models.Task?> FetchTaskAsync(Expression<Func<Models.Task, bool>> predicate)
-            => await GetPredicateQuery(predicate).FirstOrDefaultAsync();
+            => await GetPredicateQuery(predicate).AsNoTracking().FirstOrDefaultAsync();
 
         public async Task<Models.Task?> FetchTaskAsync(IFetchBuilder<Models.Task> fetchBuilder)
-            => await fetchBuilder.Build(_dbContext.Tasks.AsQueryable()).FirstOrDefaultAsync();
+            => await fetchBuilder.Build(_dbContext.Tasks.AsQueryable()).AsNoTracking().FirstOrDefaultAsync();
 
         public async Task<Models.Task?> FetchTaskAsync(Expression<Func<Models.Task, bool>> predicate, IFetchBuilder<Models.Task> fetchBuilder)
-             => await fetchBuilder.Build(GetPredicateQuery(predicate)).FirstOrDefaultAsync();
+             => await fetchBuilder.Build(GetPredicateQuery(predicate)).AsNoTracking().FirstOrDefaultAsync();
 
         public async Task<List<Models.Task>> FetchTasksAsync(Expression<Func<Models.Task, bool>> predicate)
-             => await GetPredicateQuery(predicate).ToListAsync();
+             => await GetPredicateQuery(predicate).AsNoTracking().ToListAsync();
 
         public async Task<List<Models.Task>> FetchTasksAsync(IFetchBuilder<Models.Task> fetchBuilder)
-            => await fetchBuilder.Build(_dbContext.Tasks.AsQueryable()).ToListAsync();
+            => await fetchBuilder.Build(_dbContext.Tasks.AsQueryable()).AsNoTracking().ToListAsync();
 
         public async Task<List<Models.Task>> FetchTasksAsync(Expression<Func<Models.Task, bool>> predicate, IFetchBuilder<Models.Task> fetchBuilder)
-            => await fetchBuilder.Build(GetPredicateQuery(predicate)).ToListAsync();
+            => await fetchBuilder.Build(GetPredicateQuery(predicate)).AsNoTracking().ToListAsync();
 
         #endregion
 
@@ -108,7 +130,7 @@ namespace ToDoAPI.Data.Repositories
         public object TakeSnapshot(ICollection<Models.Task> collection)
         {
             var snapshots = TakeSnapshots(collection);
-            return new { CollectionSnapshot = String.Join(",", collection.Select(t => t.ToString())) };
+            return new { CollectionSnapshot = String.Join(",", snapshots.Select(s => s.ToString())) };
         }
 
         public object[] TakeSnapshots(ICollection<Models.Task> collection)
