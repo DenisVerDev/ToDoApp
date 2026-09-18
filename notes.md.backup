@@ -96,4 +96,4 @@ I am gonna use Code First approach.
 ### Thoughts
 1. I think I must not use any other ICategoriesRepository method in a test class that has nothing to do with them. I create _dbContext and can do same operations safely. This is because implementations of these methods can change and I need to test one method specifically without any possibillity of basic functions being broken.
 2. I really need to understand where to use AsNoTracking().
-3. I decided to delete checking for exceptions types. I was doing it automat
+3. I decided to delete checking for exceptions types. I was doing it automatically and it was giving me so much head pain

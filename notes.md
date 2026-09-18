@@ -84,7 +84,7 @@ I am gonna use Code First approach.
 ### What I want to achive
 |Task|Status|
 |-|-|
-|1. Create xUnit tests for DAL.|IN PROGRESS|
+|1. Create xUnit tests for DAL.|DONE?|
 |2. Design Business Logic Layer (Services)|Pending...|
 |3. Implement Business Logic Layer (Services)|Pending...|
 
