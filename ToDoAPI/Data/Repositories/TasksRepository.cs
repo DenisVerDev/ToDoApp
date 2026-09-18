@@ -38,6 +38,12 @@ namespace ToDoAPI.Data.Repositories
 
         public async Task UpdateTasksAsync(IEnumerable<Models.Task> tasks)
         {
+            if (tasks is null)
+                throw new ArgumentNullException(nameof(tasks));
+
+            if(!tasks.Any())
+                throw new ArgumentException(nameof(tasks));
+
             _dbContext.Tasks.UpdateRange(tasks);
             await _dbContext.SaveChangesAsync();
         }
