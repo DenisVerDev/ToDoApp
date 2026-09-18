@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ToDoAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class InitDatabase : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -212,17 +212,16 @@ namespace ToDoAPI.Migrations
                 {
                     table.PrimaryKey("PK_CategoriesTasks", x => new { x.CategoryId, x.TaskId });
                     table.ForeignKey(
-                        name: "FK_CategoriesTasks_CategoryId",
+                        name: "FK_CategoriesTasks_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade); // one category can have several tasks which is more probable than one task with multiple categories
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CategoriesTasks_TaskId",
+                        name: "FK_CategoriesTasks_Tasks_TaskId",
                         column: x => x.TaskId,
                         principalTable: "Tasks",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -268,6 +267,12 @@ namespace ToDoAPI.Migrations
                 name: "IX_Categories_AuthorId",
                 table: "Categories",
                 column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_Name_AuthorId",
+                table: "Categories",
+                columns: new[] { "Name", "AuthorId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_CategoriesTasks_TaskId",

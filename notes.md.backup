@@ -10,6 +10,13 @@
 2. Business Logic Layer (interfaces and their realizations working with business logic while conceiling database operations)
 3. Controllers Layer
 
+### Data Access Layer
+1. ITasksRepository - AddTaskAsync (returns Task entity, cause Id will have a value), DeleteTaskAsync (returns nothing), FetchTaskAsync (by Id only, because there are no other unique values that can be used for identification, maybe using predicate), FetchTasksAsync (predicate search), AnyTaskAsync (predicate). You know what, how about making these methods as generic as possible, so that they could be used for any situation and I didn't have a need to add new functionality, BLL will be fine.
+2. ICategoriesRepository - 
+3. Technically, Users have Identity to work with so for now I let it be. Though it can be argued that Identity logic should be hidden too.
+
+Problem: There is a problem with more complicated sql queries like grouping, sorting, skipping and other stuff. How about these methods would return simple IQueryable? And then we can build from it?
+
 ## Database
 If I am gonna use Identity, then it is obvious that certain tables are gonna be created first. That means that I cannot plan from scratch.
 
@@ -26,6 +33,8 @@ ASP.NET Core Identity provides:
 
 We can create our own User Entity derived from IdentityUser.
 
+I am gonna use Code First approach.
+
 # Development diary
 
 ## 15.09.2026
@@ -33,11 +42,58 @@ We can create our own User Entity derived from IdentityUser.
 ### What I want to achieve
 |Task|Status|
 |-|-|
-|1. Design the database with ASP.NET Core Identity in mind.|Pending...|
-|2. Create the database.|Pending...|
-|3. Design only neccessary DAL.|Pending...|
-|4. Decide the approach in building DAL.|Pending...|
-|5. Fully create DAL.|Pending...|
+|1. Design the database with ASP.NET Core Identity in mind.|DONE|
+|2. Create the database.|DONE|
+|3. Design only neccessary DAL.|IN PROGRESS|
+|4. Decide the approach in building DAL.|DONE|
+|5. Fully create DAL.|IN PROGRESS|
 |6. Create xUnit tests for DAL.|Pending...|
 
-### What I've actually done
+## 16.09.2026
+
+### What I want to achieve
+|Task|Status|
+|-|-|
+|1. Design only neccessary DAL.|DONE|
+|2. Fully create DAL.|DONE?|
+|3. Create xUnit tests for DAL.|Pending...|
+
+### What I need to do
+1. ~~I need to add UpdateTaskAsync and UpdateCategoryAsync methods.~~
+2. ~~I need to check how ON DELETE CASCADE and ON DELETE NO ACTION is working and make a fix to deletion operations, so that BLL would not concern itself with such stuff.~~
+3. ~~I need to understand and design how attaching and detaching categories will work.~~
+4. ~~I need to think about seperating from ToDoDbContext to some abstraction.~~
+5. **Think about IUsersRepository and how it is supposed to be? Maybe not really? Like we have Identity that does all the work for us, though I am inexperienced in it, so I will wait untill I am actually working with it.**
+
+
+## 17.09.2026
+
+### What I want to achive
+|Task|Status|
+|-|-|
+|1. Create xUnit tests for DAL.|IN PROGRESS|
+|2. Design Business Logic Layer (Services)|Pending...|
+|3. Implement Business Logic Layer (Services)|Pending...|
+
+### What I need to do
+1. Apparently, my Assert.AllAsync are not what I thought they are and I must remove them.
+2. I need to track changes in the database, so that I can check if anything recently was changed. Or create a class which will do comparison of database states for me or simply override Equals in Category entity class
+
+## 18.09.2026
+
+### What I want to achive
+|Task|Status|
+|-|-|
+|1. Create xUnit tests for DAL.|IN PROGRESS|
+|2. Design Business Logic Layer (Services)|Pending...|
+|3. Implement Business Logic Layer (Services)|Pending...|
+
+### What I need to do
+1. Finish CategoriesRepository tests
+2. Write TasksRepository tests
+3. Find a way to write test faster, because otherwise it is such a slug.
+
+### Thoughts
+1. I think I must not use any other ICategoriesRepository method in a test class that has nothing to do with them. I create _dbContext and can do same operations safely. This is because implementations of these methods can change and I need to test one method specifically without any possibillity of basic functions being broken.
+2. I really need to understand where to use AsNoTracking().
+3. I decided to delete checking for exceptions types. I was doing it automatically and it was giving me so much head pain

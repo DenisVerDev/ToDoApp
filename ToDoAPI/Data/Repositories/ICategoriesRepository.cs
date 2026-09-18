@@ -1,0 +1,37 @@
+﻿using System.Linq.Expressions;
+using ToDoAPI.Data.Models;
+using ToDoAPI.Data.Repositories.FetchBuilder;
+using ToDoAPI.Data.Tools;
+using Task = System.Threading.Tasks.Task;
+
+namespace ToDoAPI.Data.Repositories
+{
+    public interface ICategoriesRepository : ISnapshot<Category>
+    {
+        Task AddCategoryAsync(Category category);
+
+        Task AddCategoriesAsync(IEnumerable<Category> categories);
+
+        Task UpdateCategoryAsync(Category category);
+
+        Task UpdateCategoriesAsync(IEnumerable<Category> categories);
+
+        Task DeleteCategoryAsync(Category category);
+
+        Task DeleteCategoriesAsync(ICollection<Category> categories);
+
+        Task<Category?> FetchCategoryAsync(Expression<Func<Category, bool>> predicate);
+
+        Task<Category?> FetchCategoryAsync(IFetchBuilder<Category> fetchBuilder);
+
+        Task<Category?> FetchCategoryAsync(Expression<Func<Category, bool>> predicate, IFetchBuilder<Category> fetchBuilder);
+
+        Task<List<Category>> FetchCategoriesAsync(Expression<Func<Category, bool>> predicate);
+
+        Task<List<Category>> FetchCategoriesAsync(IFetchBuilder<Category> fetchBuilder);
+
+        Task<List<Category>> FetchCategoriesAsync(Expression<Func<Category, bool>> predicate, IFetchBuilder<Category> fetchBuilder);
+
+        Task<bool> AnyCategoryAsync(Expression<Func<Category, bool>> predicate);
+    }
+}

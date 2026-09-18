@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 using ToDoAPI.Data.Models;
 
 namespace ToDoAPI.Data
@@ -22,7 +23,7 @@ namespace ToDoAPI.Data
             ConfigureCategories(builder);
         }
 
-        private static void ConfigureTasks(ModelBuilder builder)
+        protected virtual void ConfigureTasks(ModelBuilder builder)
         {
             builder.Entity<Models.Task>(entity =>
             {
@@ -34,7 +35,7 @@ namespace ToDoAPI.Data
 
                 entity.ToTable(t =>
                 {
-                    t.HasCheckConstraint("CK_Tasks_Title", "LEN(TRIM([Title])) > 1");
+                    t.HasCheckConstraint("CK_Tasks_Title", "LEN(TRIM([Title])) > 0");
                 });
 
                 entity.HasOne(x => x.Author)
@@ -46,7 +47,7 @@ namespace ToDoAPI.Data
             });
         }
 
-        private static void ConfigureCategories(ModelBuilder builder)
+        protected virtual void ConfigureCategories(ModelBuilder builder)
         {
             builder.Entity<Models.Category>(entity =>
             {
@@ -58,7 +59,7 @@ namespace ToDoAPI.Data
 
                 entity.ToTable(t =>
                 {
-                    t.HasCheckConstraint("CK_Categories_Name", "LEN(TRIM([Name])) > 1");
+                    t.HasCheckConstraint("CK_Categories_Name", "LEN(TRIM([Name])) > 0");
                     t.HasCheckConstraint("CK_Categories_Color", "LEN(TRIM([Color])) >= 6"); // I don't know yet if '#' is gonna be there (#RRGGBB)
                 });
 
@@ -71,6 +72,26 @@ namespace ToDoAPI.Data
                   .OnDelete(DeleteBehavior.Cascade)
                   .IsRequired();
             });
+
+            builder.Entity<Category>()
+                .HasMany(c => c.Tasks)
+                .WithMany(t => t.Categories)
+                .UsingEntity<Dictionary<string, object>>(
+                    "CategoriesTasks",
+                    j => j
+                        .HasOne<Models.Task>()
+                        .WithMany()
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.NoAction),
+                    j => j
+                        .HasOne<Category>()
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    j =>
+                    {
+                        j.HasKey("CategoryId", "TaskId");
+                    });
         }
     }
 }

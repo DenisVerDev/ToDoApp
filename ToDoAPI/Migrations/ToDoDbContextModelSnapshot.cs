@@ -22,19 +22,19 @@ namespace ToDoAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CategoryTask", b =>
+            modelBuilder.Entity("CategoriesTasks", b =>
                 {
-                    b.Property<int>("CategoriesId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TasksId")
+                    b.Property<int>("TaskId")
                         .HasColumnType("int");
 
-                    b.HasKey("CategoriesId", "TasksId");
+                    b.HasKey("CategoryId", "TaskId");
 
-                    b.HasIndex("TasksId");
+                    b.HasIndex("TaskId");
 
-                    b.ToTable("CategoryTask");
+                    b.ToTable("CategoriesTasks");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -203,7 +203,7 @@ namespace ToDoAPI.Migrations
                         {
                             t.HasCheckConstraint("CK_Categories_Color", "LEN(TRIM([Color])) >= 6");
 
-                            t.HasCheckConstraint("CK_Categories_Name", "LEN(TRIM([Name])) > 1");
+                            t.HasCheckConstraint("CK_Categories_Name", "LEN(TRIM([Name])) > 0");
                         });
                 });
 
@@ -234,7 +234,7 @@ namespace ToDoAPI.Migrations
 
                     b.ToTable("Tasks", t =>
                         {
-                            t.HasCheckConstraint("CK_Tasks_Title", "LEN(TRIM([Title])) > 1");
+                            t.HasCheckConstraint("CK_Tasks_Title", "LEN(TRIM([Title])) > 0");
                         });
                 });
 
@@ -303,18 +303,18 @@ namespace ToDoAPI.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("CategoryTask", b =>
+            modelBuilder.Entity("CategoriesTasks", b =>
                 {
                     b.HasOne("ToDoAPI.Data.Models.Category", null)
                         .WithMany()
-                        .HasForeignKey("CategoriesId")
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ToDoAPI.Data.Models.Task", null)
                         .WithMany()
-                        .HasForeignKey("TasksId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
