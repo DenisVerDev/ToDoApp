@@ -8,7 +8,7 @@ using ToDoAPI.Tests.Fixtures.Repositories;
 namespace ToDoAPI.Tests.Repositories.Tasks
 {
     [Collection("TasksRepositoryCollection")]
-    public class OtherTests
+    public class OtherTests : IDisposable
     {
         private TasksRepositoryFixture _fixture;
         private ToDoDbContext _dbContext;
@@ -49,6 +49,11 @@ namespace ToDoAPI.Tests.Repositories.Tasks
 
             // Assert
             Assert.NotNull(result);
+        }
+
+        public void Dispose()
+        {
+            _dbContext.Dispose();
         }
     }
 }

@@ -11,7 +11,7 @@ using Task = System.Threading.Tasks.Task;
 namespace ToDoAPI.Tests.Repositories.Tasks
 {
     [Collection("TasksRepositoryCollection")]
-    public class DeleteTests
+    public class DeleteTests : IDisposable
     {
         private TasksRepositoryFixture _fixture;
         private ToDoDbContext _dbContext;
@@ -213,5 +213,10 @@ namespace ToDoAPI.Tests.Repositories.Tasks
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            _dbContext.Dispose();
+        }
     }
 }
