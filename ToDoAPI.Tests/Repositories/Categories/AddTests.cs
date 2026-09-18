@@ -99,7 +99,7 @@ namespace ToDoAPI.Tests.Repositories.Categories
         public async Task AddCategoriesAsync_FreshCategories_AddsToRepo()
         {
             // Arrange
-            var beforeSnapshot = await _repository.TakeSnapshotAsync();
+            var beforeSnapshot = await _repository.TakeSnapshotsAsync();
 
             var authorId = _dbContext.Users.First().Id;
 
@@ -118,8 +118,8 @@ namespace ToDoAPI.Tests.Repositories.Categories
             await _repository.AddCategoriesAsync(categories);
 
             // Assert
-            var categoriesSnapshot = _repository.TakeSnapshot(categories);
-            var afterSnapshot = await _repository.TakeSnapshotAsync();
+            var categoriesSnapshot = _repository.TakeSnapshots(categories);
+            var afterSnapshot = await _repository.TakeSnapshotsAsync();
 
             Assert.NotEqual(beforeSnapshot, afterSnapshot);
             Assert.All(categoriesSnapshot, c => Assert.Contains(c, afterSnapshot));
@@ -166,13 +166,13 @@ namespace ToDoAPI.Tests.Repositories.Categories
         public async Task AddCategoriesAsync_EmptyCategories_DoesNothing()
         {
             // Arrange
-            var beforeSnapshot = await _repository.TakeSnapshotAsync();
+            var beforeSnapshot = await _repository.TakeSnapshotsAsync();
 
             // Act
             var result = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(new List<Category>()));
 
             // Assert
-            var afterSnapshot = await _repository.TakeSnapshotAsync();
+            var afterSnapshot = await _repository.TakeSnapshotsAsync();
 
             Assert.Null(result);
             Assert.Equal(beforeSnapshot, afterSnapshot);

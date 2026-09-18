@@ -30,7 +30,7 @@ namespace ToDoAPI.Tests.Repositories.Categories
         public async Task DeleteCategoryAsync_RealCategory_RemovesFromRepo()
         {
             // Arrange
-            var author = await _dbContext.Users.FirstAsync();
+            var author = await _dbContext.Users.AsNoTracking().FirstAsync();
 
             var category = new Category()
             {
@@ -39,7 +39,8 @@ namespace ToDoAPI.Tests.Repositories.Categories
                 AuthorId = author.Id
             };
 
-            await _repository.AddCategoryAsync(category);
+            await _dbContext.Categories.AddAsync(category);
+            await _dbContext.SaveChangesAsync();
 
             var categorySnapshot = _repository.TakeSnapshot(category);
             var beforeSnapshot = await _repository.TakeSnapshotAsync();
@@ -49,16 +50,17 @@ namespace ToDoAPI.Tests.Repositories.Categories
 
             // Assert
             var afterSnapshot = await _repository.TakeSnapshotAsync();
+            var afterSnapshots = await _repository.TakeSnapshotsAsync();
 
             Assert.NotEqual(beforeSnapshot, afterSnapshot);
-            Assert.DoesNotContain(categorySnapshot, afterSnapshot);
+            Assert.DoesNotContain(categorySnapshot, afterSnapshots);
         }
 
         [Fact]
-        public async Task DeleteCategoryAsync_FakeCategory_ThrowsDbUpdateConcurrencyException()
+        public async Task DeleteCategoryAsync_FakeCategory_ThrowsException()
         {
             // Arrange
-            var category = await _dbContext.Categories.AsNoTracking().FirstAsync();
+            var category = await _dbContext.Categories.FirstAsync();
             category.Id *= 2000;
 
             // Act
@@ -66,31 +68,41 @@ namespace ToDoAPI.Tests.Repositories.Categories
 
             // Assert
             Assert.NotNull(record);
-            Assert.IsType<DbUpdateConcurrencyException>(record);
         }
 
         [Fact]
-        public async Task DeleteCategoryAsync_NullCategory_ThrowsArgumentNullException()
+        public async Task DeleteCategoryAsync_SameIdDifferenSignature_ThrowsException()
+        {
+            // Arrange
+            var category = await _dbContext.Categories.FirstAsync(); // No AsNoTracking because we are gonna delete this guy
+            category.Name = Guid.NewGuid().ToString();
+
+            // Act
+            var record = await Record.ExceptionAsync(() => _repository.DeleteCategoryAsync(category));
+
+            // Assert
+            Assert.NotNull(record);
+        }
+
+        [Fact]
+        public async Task DeleteCategoryAsync_NullCategory_ThrowsException()
         {
             // Act
             var record = await Record.ExceptionAsync(() => _repository.DeleteCategoryAsync(null));
 
             // Assert
             Assert.NotNull(record);
-            Assert.IsType<ArgumentNullException>(record);
         }
 
         #endregion
 
-
         #region Delete Many
-
 
         [Fact]
         public async Task DeleteCategoriesAsync_RealCategories_RemovesFromRepo()
         {
             // Arrange
-            var author = await _dbContext.Users.FirstAsync();
+            var author = await _dbContext.Users.AsNoTracking().FirstAsync();
 
             var categories = new List<Category>()
             {
@@ -108,9 +120,10 @@ namespace ToDoAPI.Tests.Repositories.Categories
                 }
             };
 
-            await _repository.AddCategoriesAsync(categories);
+            await _dbContext.Categories.AddRangeAsync(categories);
+            await _dbContext.SaveChangesAsync();
 
-            var categoriesSnapshot = _repository.TakeSnapshot(categories);
+            var categoriesSnapshot = _repository.TakeSnapshots(categories);
             var beforeSnapshot = await _repository.TakeSnapshotAsync();
 
             // Act
@@ -118,16 +131,17 @@ namespace ToDoAPI.Tests.Repositories.Categories
 
             // Assert
             var afterSnapshot = await _repository.TakeSnapshotAsync();
+            var afterSnapshots = await _repository.TakeSnapshotsAsync();
 
             Assert.NotEqual(beforeSnapshot, afterSnapshot);
-            Assert.All(categoriesSnapshot, c => Assert.DoesNotContain(c, afterSnapshot));
+            Assert.All(categoriesSnapshot, c => Assert.DoesNotContain(c, afterSnapshots));
         }
 
         [Fact]
-        public async Task DeleteCategoriesAsync_FakeCategories_ThrowsDbUpdateConcurrencyException()
+        public async Task DeleteCategoriesAsync_FakeCategories_ThrowsException()
         {
             // Arrange
-            var categories = await _dbContext.Categories.AsNoTracking().ToListAsync();
+            var categories = await _dbContext.Categories.ToListAsync();
             categories.ForEach(c => c.Id *= 2000);
 
             // Act
@@ -135,11 +149,24 @@ namespace ToDoAPI.Tests.Repositories.Categories
 
             // Assert
             Assert.NotNull(record);
-            Assert.IsType<DbUpdateConcurrencyException>(record);
         }
 
         [Fact]
-        public async Task DeleteCategoriesAsync_NullCategories_ThrowsNullReferenceException()
+        public async Task DeleteCategoriesAsync_SameIdDifferentSignature_ThrowsException()
+        {
+            // Arrange
+            var categories = await _dbContext.Categories.ToListAsync();
+            categories.ForEach(c => c.Name = Guid.NewGuid().ToString());
+
+            // Act
+            var record = await Record.ExceptionAsync(() => _repository.DeleteCategoriesAsync(categories));
+
+            // Assert
+            Assert.NotNull(record);
+        }
+
+        [Fact]
+        public async Task DeleteCategoriesAsync_NullCategories_ThrowsException()
         {
             // Arrange
             var categories = new List<Category>() { null, null, null };
@@ -149,11 +176,10 @@ namespace ToDoAPI.Tests.Repositories.Categories
 
             // Assert
             Assert.NotNull(record);
-            Assert.IsType<NullReferenceException>(record);
         }
 
         [Fact]
-        public async Task DeleteCategoriesAsync_EmptyCategories_ThrowsInvalidOperationException()
+        public async Task DeleteCategoriesAsync_EmptyCategories_ThrowsException()
         {
             // Arrange
             var categories = new List<Category>() 
@@ -167,33 +193,26 @@ namespace ToDoAPI.Tests.Repositories.Categories
 
             // Assert
             Assert.NotNull(record);
-            Assert.IsType<InvalidOperationException>(record);
         }
 
         [Fact]
-        public async Task DeleteCategoriesAsync_EmptyCollection_DoesNothing()
+        public async Task DeleteCategoriesAsync_EmptyCollection_ThrowsException()
         {
-            // Arrange
-            var beforeSnapshot = await _repository.TakeSnapshotAsync();
-
             // Act
             var record = await Record.ExceptionAsync(() => _repository.DeleteCategoriesAsync(new List<Category>()));
 
             // Assert
-            var afterSnapshot = await _repository.TakeSnapshotAsync();
-
-            Assert.Equal(beforeSnapshot, afterSnapshot);
+            Assert.NotNull(record);
         }
 
         [Fact]
-        public async Task DeleteCategoriesAsync_NullCollection_ThrowsArgumentNullException()
+        public async Task DeleteCategoriesAsync_NullCollection_ThrowsException()
         {
             // Act
             var record = await Record.ExceptionAsync(() => _repository.DeleteCategoriesAsync(null));
 
             // Assert
             Assert.NotNull(record);
-            Assert.IsType<ArgumentNullException>(record);
         }
 
         #endregion

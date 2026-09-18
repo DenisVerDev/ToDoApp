@@ -78,3 +78,22 @@ I am gonna use Code First approach.
 ### What I need to do
 1. Apparently, my Assert.AllAsync are not what I thought they are and I must remove them.
 2. I need to track changes in the database, so that I can check if anything recently was changed. Or create a class which will do comparison of database states for me or simply override Equals in Category entity class
+
+## 18.09.2026
+
+### What I want to achive
+|Task|Status|
+|-|-|
+|1. Create xUnit tests for DAL.|IN PROGRESS|
+|2. Design Business Logic Layer (Services)|Pending...|
+|3. Implement Business Logic Layer (Services)|Pending...|
+
+### What I need to do
+1. Finish CategoriesRepository tests
+2. Write TasksRepository tests
+3. Find a way to write test faster, because otherwise it is such a slug.
+
+### Thoughts
+1. I think I must not use any other ICategoriesRepository method in a test class that has nothing to do with them. I create _dbContext and can do same operations safely. This is because implementations of these methods can change and I need to test one method specifically without any possibillity of basic functions being broken.
+2. I really need to understand where to use AsNoTracking().
+3. I decided to delete checking for exceptions types. I was doing it automatically and it was giving me so much head pain

@@ -18,7 +18,7 @@ namespace ToDoAPI.Data.Repositories
 
         Task DeleteCategoryAsync(Category category);
 
-        Task DeleteCategoriesAsync(IEnumerable<Category> categories);
+        Task DeleteCategoriesAsync(ICollection<Category> categories);
 
         Task<Category?> FetchCategoryAsync(Expression<Func<Category, bool>> predicate);
 
