@@ -71,5 +71,57 @@ namespace ToDoAPI.Tests.Repositories.Categories
         }
 
         #endregion
+
+        #region Fetch Many - No Builder
+
+        [Fact]
+        public async Task FetchCategoriesAsync_SatisfyingPredicate_ReturnsCategories()
+        {
+            // Arrange
+            var user = await _dbContext.Users.Where(u => u.Categories.Count > 1)
+                                             .Include(u => u.Categories).AsNoTracking().FirstOrDefaultAsync();
+
+            if (user is null)
+                Assert.Fail("There is no user with created categories.");
+
+            var userCategoriesSnapshot = _repository.TakeSnapshot(user.Categories);
+
+            // Act
+            var categories = await _repository.FetchCategoriesAsync(c => c.AuthorId == user.Id);
+
+            // Assert
+            Assert.NotNull(categories);
+            Assert.NotEmpty(categories);
+
+            var fetchedCategoriesSnapshot = _repository.TakeSnapshot(categories);
+            Assert.Equal(userCategoriesSnapshot, fetchedCategoriesSnapshot);
+        }
+
+        [Fact]
+        public async Task FetchCategoriesAsync_UnsatisfyingPredicate_ReturnsEmpty()
+        {
+            // Arrange
+            if (await _dbContext.Categories.AnyAsync(c => c.Color == "------"))
+                Assert.Fail("There already exists category with such Color value.");
+
+            // Act
+            var categories = await _repository.FetchCategoriesAsync(c => c.Color == "------");
+
+            // Assert
+            Assert.NotNull(categories);
+            Assert.Empty(categories);
+        }
+
+        [Fact]
+        public async Task FetchCategoriesAsync_NullPredicate_ThrowsException()
+        {
+            // Act
+            var record = await Record.ExceptionAsync(() => _repository.FetchCategoriesAsync(null));
+
+            // Assert
+            Assert.NotNull(record);
+        }
+
+        #endregion
     }
 }
