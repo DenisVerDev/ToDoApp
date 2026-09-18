@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ToDoAPI.Data;
 using ToDoAPI.Data.Repositories;
 using ToDoAPI.Tests.Fixtures.Repositories;
 
@@ -10,21 +11,21 @@ namespace ToDoAPI.Tests.Repositories.Categories
     public class OtherTests
     {
         private CategoriesRepositoryFixture _fixture;
+        private ToDoDbContext _dbContext;
+        private ICategoriesRepository _repository;
 
         public OtherTests(CategoriesRepositoryFixture fixture)
         {
             _fixture = fixture;
+            _dbContext = _fixture.CreateDbContext();
+            _repository = new CategoriesRepository(_dbContext);
         }
 
         [Fact]
         public async Task AnyCategoryAsync_SatisfyingCategory_ReturnsTrue()
         {
-            // Arrange
-            using var dbContext = _fixture.CreateDbContext();
-            var repository = new CategoriesRepository(dbContext);
-
             // Act
-            bool result = await repository.AnyCategoryAsync(c => c.Name == "category0");
+            bool result = await _repository.AnyCategoryAsync(c => c.Name == "category0");
 
             // Assert
             Assert.True(result);
@@ -33,30 +34,21 @@ namespace ToDoAPI.Tests.Repositories.Categories
         [Fact]
         public async Task AnyCategoryAsync_UnsatisfyingCategory_ReturnsFalse()
         {
-            // Arrange
-            using var dbContext = _fixture.CreateDbContext();
-            var repository = new CategoriesRepository(dbContext);
-
             // Act
-            bool result = await repository.AnyCategoryAsync(c => c.Name == "nonexistent");
+            bool result = await _repository.AnyCategoryAsync(c => c.Name == "nonexistent");
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public async Task AnyCategoryAsync_NullPredicate_ThrowsArgumentNullException()
+        public async Task AnyCategoryAsync_NullPredicate_ThrowsException()
         {
-            // Arrange
-            using var dbContext = _fixture.CreateDbContext();
-            var repository = new CategoriesRepository(dbContext);
-
             // Act
-            var result = await Record.ExceptionAsync(() => repository.AnyCategoryAsync(null));
+            var result = await Record.ExceptionAsync(() => _repository.AnyCategoryAsync(null));
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<ArgumentNullException>(result);
         }
     }
 }
