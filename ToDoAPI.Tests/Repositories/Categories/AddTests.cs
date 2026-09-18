@@ -161,10 +161,10 @@ namespace ToDoAPI.Tests.Repositories.Categories
             var categories = await _dbContext.Categories.ToListAsync();
 
             // Act
-            var result = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(categories));
+            var record = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(categories));
 
             // Assert
-            Assert.NotNull(result);
+            Assert.NotNull(record);
         }
 
         [Fact]
@@ -175,10 +175,10 @@ namespace ToDoAPI.Tests.Repositories.Categories
             categories.ForEach(c => c.Id *= 2000);
 
             // Act
-            var result = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(categories));
+            var record = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(categories));
 
             // Assert
-            Assert.NotNull(result);
+            Assert.NotNull(record);
         }
 
         [Fact]
@@ -193,10 +193,10 @@ namespace ToDoAPI.Tests.Repositories.Categories
             }).ToListAsync();
 
             // Act
-            var result = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(specialDuplicates));
+            var record = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(specialDuplicates));
 
             // Assert
-            Assert.NotNull(result);
+            Assert.NotNull(record);
         }
 
         [Fact]
@@ -210,10 +210,10 @@ namespace ToDoAPI.Tests.Repositories.Categories
             };
 
             // Act
-            var result = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(categories));
+            var record = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(categories));
 
             // Assert
-            Assert.NotNull(result);
+            Assert.NotNull(record);
         }
 
         [Fact]
@@ -227,30 +227,30 @@ namespace ToDoAPI.Tests.Repositories.Categories
             };
 
             // Act
-            var result = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(categories));
+            var record = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(categories));
 
             // Assert
-            Assert.NotNull(result);
+            Assert.NotNull(record);
         }
 
         [Fact]
         public async Task AddCategoriesAsync_EmptyCollection_ThrowsException()
         {
             // Act
-            var result = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(new List<Category>()));
+            var record = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(new List<Category>()));
 
             // Assert
-            Assert.NotNull(result);
+            Assert.NotNull(record);
         }
 
         [Fact]
         public async Task AddCategoriesAsync_NullCollection_ThrowsException()
         {
             // Act
-            var result = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(null));
+            var record = await Record.ExceptionAsync(() => _repository.AddCategoriesAsync(null));
 
             // Assert
-            Assert.NotNull(result);
+            Assert.NotNull(record);
         }
 
         #endregion
