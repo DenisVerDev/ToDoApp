@@ -17,6 +17,64 @@
 
 Problem: There is a problem with more complicated sql queries like grouping, sorting, skipping and other stuff. How about these methods would return simple IQueryable? And then we can build from it?
 
+### Services
+They will be working with simple type parameters, no model entities. This is to keep program modular and allow freedom in approach. Model validation is not included in Services, they assume that everything is okay.
+
+I approached designing Services methods as complete independent operations, which Controllers' endpoints are working with on instance basis. This means Controllers are  calling only one Service operation per API endpoint. Again, this creates modular and flexible architecture. I am also strongly against doing many Services' operations inside one Controller method, because this is not something request handler should do. Controllers are accepting requests, handling all the work to the service and return the result.
+
+**!!! User related services I will think about later.**
+
+#### ITasksManagement
+
+|Method|Parameters|
+|-|-|
+|CreateTaskAsync|string title, string? description, string authorId|
+|UpdateTaskContentAsync|int taskId, string title, string? description|
+|DeleteTaskAsync|int taskId|
+|DeleteAllTasksAsync|string authorId|
+
+#### ICategoriesManagement
+
+|Method|Parameters|
+|-|-|
+|CreateCategoryAsync|string name, Color (string) color, string authorId|
+|UpdateCategoryAsync|int categoryId, string name, Color (string) color|
+|DeleteCategoryAsync|int categoryId|
+|DeleteAllCategoriesAsync|string authorId|
+
+#### ITasksCategoriesManagement
+
+|Method|Parameters|
+|-|-|
+|AttachCategoryAsync|int taskId, int categoryId|
+|AttachCategoriesAsync|int taskId, int[] categoriesId|
+|AttachAllCategoriesAsync|int taskId|
+|DetachCategoryAsync|int taskId, int categoryId|
+|DetachCategoriesAsync|int taskId, int[] categoriesId|
+|DetachAllCategoriesAsync|int taskId|
+
+#### ITasksFetching
+
+|Method|Parameters|
+|-|-|
+|FetchTaskAsync|int taskId|
+|FetchTasksAsync|string authorId|
+
+Those two are basic methods, there will be others for pagination, filtering and etc.
+
+#### ICategoriesFetching
+
+|Method|Parameters|
+|-|-|
+|FetchCategoryAsync|int categoryId|
+|FetchCategoriesAsync|string authorId|
+
+---
+
+What results types there can be: Success, Error (exception) AbsentAuthor, AbsentTask, AbsentCategory and many more. I propose to create single enum for services operations' results.
+
+---
+
 ## Database
 If I am gonna use Identity, then it is obvious that certain tables are gonna be created first. That means that I cannot plan from scratch.
 
@@ -97,3 +155,11 @@ I am gonna use Code First approach.
 1. I think I must not use any other ICategoriesRepository method in a test class that has nothing to do with them. I create _dbContext and can do same operations safely. This is because implementations of these methods can change and I need to test one method specifically without any possibillity of basic functions being broken.
 2. I really need to understand where to use AsNoTracking().
 3. I decided to delete checking for exceptions types. I was doing it automatically and it was giving me so much head pain
+
+## 20.09.2026
+
+### What I want to achive
+|Task|Status|
+|-|-|
+|1. Design Services|DONE?|
+|2. Implement Services|Pending...|
