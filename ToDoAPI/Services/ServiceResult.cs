@@ -2,9 +2,14 @@
 {
     public class ServiceResult<TResult>
     {
-        public TResult? Result { get; private set; }
+        public TResult? Result { get; init; }
 
-        public ServiceResultStatus Status { get; private set; }
+        public ServiceResultStatus Status { get; init; }
+
+        public ServiceResult()
+        {
+            
+        }
 
         public ServiceResult(TResult? result, ServiceResultStatus status)
         {
@@ -22,6 +27,8 @@
         AbsentTasks,
         AbsentCategory,
         AbsentCategories,
-        DuplicateCategory
+        DuplicateCategory,
+        AlreadyAttached,
+        NotAttached
     }
 }
