@@ -19,6 +19,9 @@
         Error,
         AbsentUser,
         AbsentTask,
-        AbsentTasks
+        AbsentTasks,
+        AbsentCategory,
+        AbsentCategories,
+        DuplicateCategory
     }
 }
