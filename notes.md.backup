@@ -161,5 +161,15 @@ I am gonna use Code First approach.
 ### What I want to achive
 |Task|Status|
 |-|-|
-|1. Design Business Logic Layer (Services)|DONE?|
-|2. Implement Business Logic Layer (Services)|Pending...|
+|1. Design Services|DONE?|
+|2. Implement Services|Pending...|
+
+## 22.09.2026
+
+### What I want to achive
+|Task|Status|
+|-|-|
+|1. Implement Services|IN PROGRESS|
+
+### Thoughts
+1. I am leaving Exception handling in services methods for no, b

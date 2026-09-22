@@ -163,3 +163,13 @@ I am gonna use Code First approach.
 |-|-|
 |1. Design Services|DONE?|
 |2. Implement Services|Pending...|
+
+## 22.09.2026
+
+### What I want to achive
+|Task|Status|
+|-|-|
+|1. Implement Services|IN PROGRESS|
+
+### Thoughts
+1. I am leaving Exception handling in services methods for now, because I don't have a full picture of what API will return, because I plany to add global exception handling into the request pipeline.

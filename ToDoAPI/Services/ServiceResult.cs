@@ -17,6 +17,8 @@
     {
         Success,
         Error,
-        Absent
+        AbsentUser,
+        AbsentTask,
+        AbsentTasks
     }
 }
