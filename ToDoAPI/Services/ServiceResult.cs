@@ -29,6 +29,8 @@
         AbsentCategories,
         DuplicateCategory,
         AlreadyAttached,
-        NotAttached
+        NotAttached,
+        DuplicateUser,
+        IncorrectPassword
     }
 }
