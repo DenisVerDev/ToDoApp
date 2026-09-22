@@ -6,11 +6,11 @@ namespace ToDoAPI.Services.Tasks
 {
     public class TasksManagement (ITasksRepository _tRepo, IUsersRepository _uRepo) : ITasksManagement
     {
-        public async Task<ServiceResult<Data.Models.Task>> CreateTaskAsync(string title, string? description, string authorId)
+        public async Task<ServiceResultStatus> CreateTaskAsync(string title, string? description, string authorId)
         {
             // check if author exists
             if (!await _uRepo.AnyUserAsync(u => u.Id == authorId))
-                return new ServiceResult<Data.Models.Task>(null, ServiceResultStatus.AbsentUser);
+                return ServiceResultStatus.AbsentUser;
 
             // creating Data.Models.Task entity
             var task = new Data.Models.Task
@@ -24,16 +24,16 @@ namespace ToDoAPI.Services.Tasks
             await _tRepo.AddTaskAsync(task);
 
             // return Success
-            return new ServiceResult<Data.Models.Task>(task, ServiceResultStatus.Success);
+            return ServiceResultStatus.Success;
         }
 
-        public async Task<ServiceResult<Data.Models.Task>> UpdateTaskContentAsync(int taskId, string title, string? description)
+        public async Task<ServiceResultStatus> UpdateTaskContentAsync(int taskId, string title, string? description)
         {
             // check if task exists and get it's instance
             var task = await _tRepo.FetchTaskAsync(t => t.Id == taskId);
 
             if (task is null)
-                return new ServiceResult<Data.Models.Task>(null, ServiceResultStatus.AbsentTask);
+                return ServiceResultStatus.AbsentTask;
 
             // changing instance's properties
             task.Title = title;
@@ -43,7 +43,7 @@ namespace ToDoAPI.Services.Tasks
             await _tRepo.UpdateTaskAsync(task);
 
             // return Success
-            return new ServiceResult<Data.Models.Task>(task, ServiceResultStatus.Success);
+            return ServiceResultStatus.Success;
         }
 
         public async Task<ServiceResultStatus> DeleteTaskAsync(int taskId)

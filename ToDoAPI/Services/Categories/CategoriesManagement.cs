@@ -6,13 +6,13 @@ namespace ToDoAPI.Services.Categories
 {
     public class CategoriesManagement(ICategoriesRepository _cRepo, IUsersRepository _uRepo) : ICategoriesManagement
     {
-        public async Task<ServiceResult<Category>> CreateCategoryAsync(string name, string color, string authorId)
+        public async Task<ServiceResultStatus> CreateCategoryAsync(string name, string color, string authorId)
         {
             if (!await _uRepo.AnyUserAsync(u => u.Id == authorId))
-                return new ServiceResult<Category>(null, ServiceResultStatus.AbsentUser);
+                return ServiceResultStatus.AbsentUser;
 
             if(await _cRepo.AnyCategoryAsync(c => c.Name == name && c.AuthorId == authorId))
-                return new ServiceResult<Category>(null, ServiceResultStatus.DuplicateCategory);
+                return ServiceResultStatus.DuplicateCategory;
 
             var category = new Category
             {
@@ -23,20 +23,20 @@ namespace ToDoAPI.Services.Categories
 
             await _cRepo.AddCategoryAsync(category);
 
-            return new ServiceResult<Category>(category, ServiceResultStatus.Success);
+            return ServiceResultStatus.Success;
         }
 
-        public async Task<ServiceResult<Category>> UpdateCategoryAsync(int categoryId, string name, string color)
+        public async Task<ServiceResultStatus> UpdateCategoryAsync(int categoryId, string name, string color)
         {
             // checking if target of the update exists
             var category = await _cRepo.FetchCategoryAsync(c => c.Id == categoryId);
 
             if (category is null)
-                return new ServiceResult<Category>(null, ServiceResultStatus.AbsentCategory);
+                return ServiceResultStatus.AbsentCategory;
 
             // checking if there is no category with the name we are trying to update
             if(await _cRepo.AnyCategoryAsync(c => c.Name == name && c.AuthorId == category.AuthorId))
-                return new ServiceResult<Category>(null, ServiceResultStatus.DuplicateCategory);
+                return ServiceResultStatus.DuplicateCategory;
 
             // changing properties
             category.Name = name;
@@ -46,7 +46,7 @@ namespace ToDoAPI.Services.Categories
             await _cRepo.UpdateCategoryAsync(category);
 
             // returning Success
-            return new ServiceResult<Category>(category, ServiceResultStatus.Success);
+            return ServiceResultStatus.Success;
         }
 
         public async Task<ServiceResultStatus> DeleteCategoryAsync(int categoryId)

@@ -172,4 +172,5 @@ I am gonna use Code First approach.
 |1. Implement Services|IN PROGRESS|
 
 ### Thoughts
-1. I am leaving Exception handling in services methods for no, b
+1. I am leaving Exception handling in services methods for now, because I don't have a full picture of what API will return, because I plany to add global exception handling into the request pipeline.
+2. I was relying too much on previous iteration of this project. After thinking for a bit I came to conclusion that service methods should not return anything other than a status code, of course the exception be fetching methods. The thing is, why should I return more data for UpdateTaskContentAsync for example? Place from which request that came my way already knows what changes there are and is only awaiting confirmatio
