@@ -10,7 +10,7 @@ using ToDoAPI.Data.Models;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 using Task = System.Threading.Tasks.Task;
 
-namespace ToDoAPI.Services.Identity
+namespace ToDoAPI.Services.Authentication
 {
     public class JwtAuthentication (IConfiguration _conf, UserManager<User> _um) : IAuthentication
     {

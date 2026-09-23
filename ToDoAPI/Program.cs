@@ -7,7 +7,7 @@ using ToDoAPI.Data;
 using ToDoAPI.Data.Models;
 using ToDoAPI.Data.Repositories;
 using ToDoAPI.Services.Categories;
-using ToDoAPI.Services.Identity;
+using ToDoAPI.Services.Authentication;
 using ToDoAPI.Services.Tasks;
 using ToDoAPI.Services.Users;
 
