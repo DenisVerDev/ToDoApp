@@ -1,5 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using ToDoAPI.Data.Repositories;
+﻿using ToDoAPI.Data.Repositories;
+using ToDoAPI.Extensions;
 
 namespace ToDoAPI.Services.Tasks
 {

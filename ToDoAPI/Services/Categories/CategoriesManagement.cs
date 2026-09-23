@@ -1,6 +1,6 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using ToDoAPI.Data.Models;
+﻿using ToDoAPI.Data.Models;
 using ToDoAPI.Data.Repositories;
+using ToDoAPI.Extensions;
 
 namespace ToDoAPI.Services.Categories
 {
