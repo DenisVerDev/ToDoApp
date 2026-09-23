@@ -7,6 +7,7 @@ using ToDoAPI.Data;
 using ToDoAPI.Data.Models;
 using ToDoAPI.Data.Repositories;
 using ToDoAPI.Services.Categories;
+using ToDoAPI.Services.Identity;
 using ToDoAPI.Services.Tasks;
 using ToDoAPI.Services.Users;
 
@@ -41,6 +42,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtBearer:SecurityKey"]!))
                     };
                 });
+
+builder.Services.AddScoped<IAuthentication, JwtAuthentication>();
 
 builder.Services.AddScoped<ITasksRepository, TasksRepository>();
 builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
