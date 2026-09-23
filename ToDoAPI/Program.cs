@@ -1,6 +1,13 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ToDoAPI.Data;
+using ToDoAPI.Data.Models;
 using ToDoAPI.Data.Repositories;
+using ToDoAPI.Services.Categories;
+using ToDoAPI.Services.Tasks;
+using ToDoAPI.Services.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,8 +16,24 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("ToDoApp");
 builder.Services.AddDbContext<ToDoDbContext>(optBuilder => optBuilder.UseSqlServer(connectionString));
 
+builder.Services.AddIdentityCore<User>().AddEntityFrameworkStores<ToDoDbContext>();
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+});
+
+// I need to configure authentication though
+
 builder.Services.AddScoped<ITasksRepository, TasksRepository>();
 builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
+builder.Services.AddScoped<IUsersRepository, UsersIdentityRepository>();
+
+builder.Services.AddScoped<ICategoriesManagement, CategoriesManagement>();
+builder.Services.AddScoped<ICategoriesFetching, CategoriesFetching>();
+builder.Services.AddScoped<ITasksManagement, TasksManagement>();
+builder.Services.AddScoped<ITasksFetching, TasksFetching>();
+builder.Services.AddScoped<IUsersManagement, UsersManagement>();
+builder.Services.AddScoped<IUsersFetching, UsersFetching>();
 
 builder.Services.AddControllers();
 
@@ -20,6 +43,7 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
