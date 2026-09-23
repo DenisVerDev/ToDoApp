@@ -19,7 +19,7 @@ namespace ToDoAPI.Services.Users
             if (user is null)
                 return ServiceResultStatus.AbsentUser;
 
-            return await _uRepo.CheckUserAsync(user, password) ? ServiceResultStatus.Success : ServiceResultStatus.IncorrectPassword;
+            return await _uRepo.VerifyUserAsync(user, password) ? ServiceResultStatus.Success : ServiceResultStatus.IncorrectPassword;
         }
     }
 }

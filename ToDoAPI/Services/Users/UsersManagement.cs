@@ -16,7 +16,8 @@ namespace ToDoAPI.Services.Users
             var user = new User { Email = email };
             
             // add it into the database
-            await _uRepo.AddUserAsync(user, password);
+            await _uRepo.AddUserAsync(user);
+            await _uRepo.AddPasswordAsync(user, password);
             
             // return Success
             return ServiceResultStatus.Success;
